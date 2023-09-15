@@ -1,4 +1,4 @@
-An environment for training AI to play Haxball.
+### An environment for training AI to play Haxball.
 
 Made mostly by Seb Towers (Oxford University) with help from Philip Nielsen, Stefan Clarke (Princeton University) and Taavet Kalda (Max Planck Institute).
 
@@ -16,3 +16,5 @@ To get the game running:
 For examples of how to set up neural networks to play the game see "network.py".
 For an example of a training loop see "basic_trainers.ppo_fixed.py".
 For templates for getting your own agents to play on the visual game see "agents".
+
+![]([https://github.com/Your_Repository_Name/Your_GIF_Name.gif](https://github.com/stefanlclarke/HaxballEnv/blob/master/haxball_gif.gif)https://github.com/stefanlclarke/HaxballEnv/blob/master/haxball_gif.gif)
