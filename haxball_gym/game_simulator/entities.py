@@ -1,4 +1,4 @@
-from game_simulator.config import config
+from haxball_gym.config import config
 from game_simulator import playeraction
 from game_log import log
 
@@ -55,8 +55,7 @@ class Player(Entity):
         self.pos += self.vel
 
     def reset(self, reset_type):
-        if reset_type == "random":
-        # positional parameters
+        if reset_type == "random":  # positional parameters
             self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
                                  config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
         elif reset_type == "default":
@@ -92,8 +91,7 @@ class Ball(Entity):
         self.pos += self.vel
 
     def reset(self, reset_type):
-        if reset_type == "random":
-			# positional parameters
+        if reset_type == "random":  # positional parameters
             self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
                                  config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
         elif reset_type == "default":

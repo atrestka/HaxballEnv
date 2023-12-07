@@ -1,18 +1,19 @@
 import game_simulator.gamesim as gs
-from game_simulator import gameparams
+from game_simulator.config import config
 from game_displayer import basicdisplayer
 from agents import humanagent
 from game_log import log
 import pygame
 
-def recordPlayerGames(dest, games_to_play = 10):
-    disp = basicdisplayer.GameWindow(gameparams.windowwidth, gameparams.windowheight)
+
+def recordPlayerGames(dest, games_to_play=10):
+    disp = basicdisplayer.GameWindow(config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
     blue_agent = humanagent.HumanAgent(('w', 'd', 's', 'a', 'LSHIFT'), disp)
     red_agent = humanagent.HumanAgent(('UP', 'RIGHT', 'DOWN', 'LEFT', 'RCTRL'), disp)
     pygame.init()
 
     for game_number in range(games_to_play):
-        sim = gs.GameSim(1,1,1)
+        sim = gs.GameSim(1, 1, 1)
         game_done = False
         game_log = log.Game()
         while not game_done:

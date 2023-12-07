@@ -1,9 +1,10 @@
 from game_simulator import playeraction
-from game_simulator import gameparams as gp
+from game_simulator.config import config
 from dataclasses import dataclass, field
 from typing import List
 import pickle
 import numpy as np
+
 
 @dataclass
 class BallState:
@@ -12,17 +13,18 @@ class BallState:
     vx: float
     vy: float
 
-    def posToList(self, myTeam, normalise = True):
+    def posToList(self, myTeam, normalise=True):
         if myTeam == "red":
             l = [self.x, self.y, self.vx, self.vy]
         elif myTeam == "blue":
-            l = [gp.windowwidth - self.x, gp.windowheight - self.y, -self.vx, -self.vy]
+            l = [config.WINDOW_WIDTH - self.x, config.WINDOW_HEIGHT - self.y, -self.vx, -self.vy]
         else:
             raise ValueError
         if normalise:
-            v_max = gp.accel * gp.playerdamping / (1 - gp.playerdamping)
-            l = [l[0] / gp.windowwidth, l[1] / gp.windowheight, l[2] / v_max, l[3] / v_max]
+            v_max = config.accel * config.PLAYER_DAMPING / (1 - config.PLAYER_DAMPING)
+            l = [l[0] / config.WINDOW_WIDTH, l[1] / config.WINDOW_HEIGHT, l[2] / v_max, l[3] / v_max]
         return l
+
 
 @dataclass
 class PlayerState(BallState):
@@ -36,29 +38,30 @@ class PlayerState(BallState):
         else:
             raise ValueError
 
+
 @dataclass
 class Frame:
     blues: List[PlayerState]
     reds: List[PlayerState]
     balls: List[BallState]
 
-    def posToNp(self, myTeam = "red", me = 0, normalise = True):
+    def posToNp(self, myTeam="red", me=0, normalise=True):
         if myTeam == "blue":
             return np.array(
-                    self.blues[me].posToList(myTeam, normalise)
-                    + [x for p in self.blues[me+1:] for x in p.posToList(myTeam, normalise)]
-                    + [x for p in self.blues[:me]   for x in p.posToList(myTeam, normalise)]
-                    + [x for p in self.reds         for x in p.posToList(myTeam, normalise)]
-                    + [x for b in self.balls        for x in b.posToList(myTeam, normalise)]
-                    )
+                self.blues[me].posToList(myTeam, normalise)
+                + [x for p in self.blues[me + 1:] for x in p.posToList(myTeam, normalise)]
+                + [x for p in self.blues[:me] for x in p.posToList(myTeam, normalise)]
+                + [x for p in self.reds for x in p.posToList(myTeam, normalise)]
+                + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
+            )
         elif myTeam == "red":
             return np.array(
-                    self.reds[me].posToList(myTeam, normalise)
-                    + [x for p in self.reds[:me]   for x in p.posToList(myTeam, normalise)]
-                    + [x for p in self.reds[me+1:] for x in p.posToList(myTeam, normalise)]
-                    + [x for p in self.blues       for x in p.posToList(myTeam, normalise)]
-                    + [x for b in self.balls       for x in b.posToList(myTeam, normalise)]
-                    )
+                self.reds[me].posToList(myTeam, normalise)
+                + [x for p in self.reds[:me] for x in p.posToList(myTeam, normalise)]
+                + [x for p in self.reds[me + 1:] for x in p.posToList(myTeam, normalise)]
+                + [x for p in self.blues for x in p.posToList(myTeam, normalise)]
+                + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
+            )
         else:
             raise ValueError
 
@@ -70,19 +73,19 @@ class Frame:
         else:
             raise ValueError
 
+
 @dataclass
 class Game:
     red_goals: int = 0
     blue_goals: int = 0
-    frames: List[Frame] = field(default_factory = list)
+    frames: List[Frame] = field(default_factory=list)
 
     def append(self, frame):
         self.frames.append(frame)
 
-    def toNp(self, myTeam, me, normalise = True):
-        return np.array([f.posToNp(myTeam, me, normalise) for f in self.frames]), np.array([f.singleActToNp(myTeam, me) for f in self.frames])
-
-
+    def toNp(self, myTeam, me, normalise=True):
+        return np.array([f.posToNp(myTeam, me, normalise) for f in self.frames]), \
+            np.array([f.singleActToNp(myTeam, me) for f in self.frames])
 
     @staticmethod
     def load(filename):

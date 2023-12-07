@@ -5,7 +5,7 @@ import torch
 
 from agents import ACagent, humanACagent, humanagent, idleagent
 from game_displayer import basicdisplayer
-from game_simulator import gameparams as gp
+from game_simulator.config import config
 from game_simulator import gamesim
 from game_log import log
 from move_displayer import movedisplayer
@@ -142,13 +142,17 @@ def main():
     blue_debug_surf = movedisplayer.DebugSurf()
 
     if not args.suppress_display:
-        display = basicdisplayer.GameWindow(gp.windowwidth + 2 * 256, gp.windowheight,\
-                                        debug_surfs = [red_debug_surf.surf, blue_debug_surf.surf])
+        display = basicdisplayer.GameWindow(config.WINDOW_WIDTH + 2 * 256, config.WINDOW_HEIGHT,
+                                            debug_surfs=[red_debug_surf.surf, blue_debug_surf.surf])
     else:
         display = None
     agents = getAgents(display, red_debug_surf, blue_debug_surf)
 
-    game = gamesim.GameSim(1, 1, 1, printDebug = args.print_debug, print_score_update = not args.suppress_scorekeeping,auto_score = args.auto_score, rand_reset = args.rand_reset, max_steps = args.max_steps)
+    game = gamesim.GameSim(1, 1, 1, printDebug=args.print_debug,
+                           print_score_update=not args.suppress_scorekeeping,
+                           auto_score=args.auto_score,
+                           rand_reset=args.rand_reset,
+                           max_steps=args.max_steps)
 
     # Run the game
     for game_number in range(args.max_games):

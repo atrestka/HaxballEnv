@@ -27,7 +27,7 @@ class GameWindow:
         # draws ball area
         pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.PITCH_CORNER_X, config.PITCH_CORNER_Y,
                                                          config.PITCH_WIDTH, config.PITCH_HEIGHT))
-        #draws area behind goal
+        # draws area behind goal
         pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.PITCH_CORNER_X - 30, config.GOAL_CORNER_Y, 30,
                                                          config.GOAL_SIZE))
         pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.WINDOW_WIDTH - config.PITCH_CORNER_X,
@@ -49,12 +49,21 @@ class GameWindow:
                 config.PITCH_HEIGHT + config.GOAL_LINE_THICKNESS
             )
         )
-        pygame.draw.rect(self.win, config.GOAL_LINE_COLOUR, (
-        config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2, config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2, config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS,
-        config.GOAL_LINE_THICKNESS))
-        pygame.draw.rect(self.win, config.GOAL_LINE_COLOUR, (
-        config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2, config.WINDOW_HEIGHT - config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2,
-        config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS, config.GOAL_LINE_THICKNESS))
+        pygame.draw.rect(
+            self.win, config.GOAL_LINE_COLOUR, (
+                config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2,
+                config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2,
+                config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS,
+                config.GOAL_LINE_THICKNESS
+            )
+        )
+        pygame.draw.rect(
+            self.win, config.GOAL_LINE_COLOUR, (
+                config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2,
+                config.WINDOW_HEIGHT - config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2,
+                config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS, config.GOAL_LINE_THICKNESS
+            )
+        )
 
         cnt = 0
         # draws GOALPOSTS
@@ -67,25 +76,27 @@ class GameWindow:
                 goalpostcol = (200, 150, 150)
             else:
                 goalpostcol = (150, 150, 200)
-            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS-config.GOALPOST_BORDER_THICKNESS, goalpostcol)
-            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS-config.GOALPOST_BORDER_THICKNESS, goalpostcol)
+            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1],
+                                  config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, goalpostcol)
+            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1],
+                             config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, goalpostcol)
 
         def drawPlayer(p, colour):
             if p.action.isKicking():
                 gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                    config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
+                                      config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
                 gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                    config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
+                                 config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
             else:
                 gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                    config.KICKING_CIRCLE_RADIUS, (0,0,0))
+                                      config.KICKING_CIRCLE_RADIUS, (0, 0, 0))
                 gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                    config.KICKING_CIRCLE_RADIUS, (0,0,0))
+                                 config.KICKING_CIRCLE_RADIUS, (0, 0, 0))
 
             gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                config.PLAYER_RADIUS-config.KICKING_CIRCLE_THICKNESS, colour)
+                                  config.PLAYER_RADIUS - config.KICKING_CIRCLE_THICKNESS, colour)
             gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                config.PLAYER_RADIUS-config.KICKING_CIRCLE_THICKNESS, colour)
+                             config.PLAYER_RADIUS - config.KICKING_CIRCLE_THICKNESS, colour)
 
         for p in frame.reds:
             drawPlayer(p, config.RED_COLOUR)
@@ -93,8 +104,8 @@ class GameWindow:
             drawPlayer(p, config.BLUE_COLOUR)
 
         for b in frame.balls:
-            gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS+2, (0, 0, 0))
-            gfxdraw.aacircle(self.win, int(b.x), int(b.y), config.BALL_RADIUS+2, (0, 0, 0))
+            gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS + 2, (0, 0, 0))
+            gfxdraw.aacircle(self.win, int(b.x), int(b.y), config.BALL_RADIUS + 2, (0, 0, 0))
             gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS, (255, 255, 255))
             gfxdraw.aacircle(self.win, int(b.x), int(b.y), config.BALL_RADIUS, (255, 255, 255))
 
@@ -108,16 +119,15 @@ class GameWindow:
         self.clock.tick(self.fps)
         pygame.display.update()
 
-
     def getInput(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.rip = True
 
-    def isKeyPressed(self, key, is_int = False):
+    def isKeyPressed(self, key, is_int=False):
         # Checks whether a key is being pressed, input is a char or an int.
         pressed_keys = pygame.key.get_pressed()
-        if is_int == False:
+        if not is_int:
             if key == 'UP':
                 return pressed_keys[273]
             elif key == 'RIGHT':
