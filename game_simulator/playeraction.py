@@ -2,13 +2,14 @@ import numpy as np
 import random
 
 dirx = [0, 0, 1, 1, 1, 0, -1, -1, -1]
-diry = [0, 1, 1, 0, -1, -1 ,-1, 0, 1]
+diry = [0, 1, 1, 0, -1, -1, -1, 0, 1]
+
 
 def rawToBinary(*x):
     if len(x) != 2:
         raise TypeError("Raw action should be a tuple of length 2")
     if x[0] < 0 or x[0] > 8 or x[1] < 0 or x[1] > 1:
-        raise ValuError("Raw action is not of the correct format")
+        raise ValueError("Raw action is not of the correct format")
 
     ret = [0, 0, 0, 0, x[1]]
     if x == 8 or x == 1 or x == 2:
@@ -20,6 +21,7 @@ def rawToBinary(*x):
     if 6 <= x[0] and x[0] <= 8:
         ret[3] = 1
     return ret
+
 
 def binaryToRaw(*x):
     if len(x) != 5:
@@ -41,6 +43,7 @@ def binaryToRaw(*x):
     else:
         dir = max(a, b)
     return (dir, x[4])
+
 
 class Action:
     # Action stores all the useful info about an action that the player can have
@@ -78,7 +81,8 @@ class Action:
     def rawAction(self):
         # Returns raw action for use in networks. A tuple of the kicking state (0 or 1)
         # and movement direction (from 0 to 8)
-        return  self.dir_idx, self.kicking
+        return self.dir_idx, self.kicking
+
     def binaryAction(self):
         return rawToBinary(self.dir_idx, self.kicking)
 

@@ -5,6 +5,7 @@ from gym import core, spaces
 import numpy as np
 import torch
 
+
 class SingleplayerGym(core.Env):
     def __init__(self, config):
         if "step_length" in config:

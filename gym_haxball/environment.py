@@ -1,17 +1,19 @@
-from game_simulator import gamesim, gameparams, playeraction
+from game_simulator import gamesim, playeraction
 from game_displayer import basicdisplayer
+from game_simulator.config import config
+
 
 import numpy as np
 
 
-class DuelEnviroment:
+class HaxballEnvironment:
     def __init__(self, step_len=15, max_steps=400, norming=True):
         self.step_len = step_len
         self.max_steps = max_steps
 
         self.norming = norming
 
-        self.game_sim = gamesim.GameSim(1,1,1)
+        self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS)
         self.game_sim.resetMap()
 
         self.steps_since_reset = 0
@@ -21,15 +23,15 @@ class DuelEnviroment:
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
         # That's desired so the state is in an easier to manipulate form.
-        return np.array(self.game_sim.log().posToNp("red",0,self.norming))
+        return np.array(self.game_sim.log().posToNp("red", 0, self.norming))
 
-    def step(self, red_action, blue_action):
+    def step(self, action_list):
         # advances the simulator by step_len number of steps. Returns a list of
         # [observation (object), reward (float), done (bool), info (dict)]
         # Actions must be integeres in the range [0, 18)
         self.steps_since_reset += 1
 
-        self.game_sim.giveCommands( [playeraction.Action(red_action), playeraction.Action(blue_action) ] )
+        self.game_sim.giveCommands([playeraction.Action(action) for action in action_list])
 
         for i in range(self.step_len):
             self.game_sim.step()
@@ -48,8 +50,8 @@ class DuelEnviroment:
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it
-        if self.display == None:
-            self.display = basicdisplayer.GameWindow(gameparams.windowwidth, gameparams.windowheight)
+        if self.display is None:
+            self.display = basicdisplayer.GameWindow(config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
 
         self.display.drawFrame(self.game_sim.log())
 

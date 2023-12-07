@@ -1,8 +1,9 @@
-from game_simulator import gameparams
+from game_simulator.config import config
 from game_simulator import playeraction
 from game_log import log
 
 import numpy as np
+
 
 # Base class for any entity, stores position, velocity, acceleration.
 class Entity:
@@ -21,11 +22,12 @@ class Entity:
     def getDirectionTo(self, obj):
         return (obj.pos - self.pos) / self.getDistanceTo(obj)
 
+
 class Player(Entity):
-    def __init__(self, team, initial_position, initial_velocity = np.zeros(2), initial_acceleration = np.zeros(2), ):
+    def __init__(self, team, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
         Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
-                        gameparams.playerradius, gameparams.playerbouncing)
+                        config.PLAYER_RADIUS, config.PLAYER_BOUNCING)
 
         # Set the not random reset position
         self.default_position = initial_position
@@ -39,23 +41,24 @@ class Player(Entity):
 
         # player properties
         self.team = team
-        self.mass = 1 / gameparams.playerinvmass
+        self.mass = 1 / config.PLAYER_INV_MASS
 
     def updatePosition(self):
         # Updates the position of the player while taking the player input into account
         # Damping effect when trying to kick the ball
-        if self.current_action.isKicking() == True and self.can_kick == True:
-            self.vel += self.current_action.getDirection() * gameparams.kickaccel
+        if self.current_action.isKicking() and self.can_kick:
+            self.vel += self.current_action.getDirection() * config.KICK_ACCELARATION
         else:
-            self.vel += self.current_action.getDirection() * gameparams.accel
+            self.vel += self.current_action.getDirection() * config.ACCELARATION
 
-        self.vel *= gameparams.playerdamping
+        self.vel *= config.PLAYER_DAMPING
         self.pos += self.vel
 
     def reset(self, reset_type):
         if reset_type == "random":
-			# positional parameters
-            self.pos = np.array([gameparams.pitchcornerx + (np.random.random_sample())*580, gameparams.pitchcornery + (np.random.random_sample())*200]).astype(float)
+        # positional parameters
+            self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
+                                 config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
         elif reset_type == "default":
             self.pos = self.default_position
         else:
@@ -71,27 +74,31 @@ class Player(Entity):
     def log(self):
         return log.PlayerState(*self.pos, *self.vel, self.current_action)
 
+
 class Ball(Entity):
-    def __init__(self, initial_position, initial_velocity = np.zeros(2), initial_acceleration = np.zeros(2)):
+    def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration, gameparams.ballradius, gameparams.ballbouncing)
+        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                        config.BALL_RADIUS, config.BALL_BOUNCING)
 
         # ball properties
-        self.mass = 1 / gameparams.ballinvmass
-        self.inv_mass = gameparams.ballinvmass
+        self.mass = 1 / config.BALL_INV_MASS
+        self.inv_mass = config.BALL_INV_MASS
 
     def updatePosition(self):
         # Updates the position of the entity. Doesn't include any step duration for
         # whatever reason. God help us all
-        self.vel *= gameparams.balldamping
+        self.vel *= config.BALL_DAMPING
         self.pos += self.vel
 
     def reset(self, reset_type):
         if reset_type == "random":
 			# positional parameters
-            self.pos = np.array([gameparams.pitchcornerx + (np.random.random_sample())*580, gameparams.pitchcornery + (np.random.random_sample())*200]).astype(float)
+            self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
+                                 config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
         elif reset_type == "default":
-            self.pos = np.array([gameparams.pitchcornerx + gameparams.pitchwidth / 2, gameparams.pitchcornery + gameparams.pitchheight / 2])
+            self.pos = np.array([config.PITCH_CORNER_X + config.PITCH_WIDTH / 2,
+                                 config.PITCH_CORNER_Y + config.PITCH_HEIGHT / 2])
         else:
             raise ValueError("Passed a wrong reset type to a ball")
         self.vel = np.zeros(2)
@@ -99,12 +106,16 @@ class Ball(Entity):
     def log(self):
         return log.BallState(self.pos[0], self.pos[1], self.vel[0], self.vel[1])
 
+
 class GoalPost(Entity):
-    def __init__(self, initial_position, initial_velocity = np.zeros(2), initial_acceleration = np.zeros(2)):
+    def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration, gameparams.goalpostradius, gameparams.goalpostbouncingquotient)
+        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                        config.GOALPOST_RADIUS, config.GOALPOST_BOUNCING_QUOTIENT)
+
 
 class CentreCircleBlock(Entity):
-    def __init__(self, initial_position, initial_velocity = np.zeros(2), initial_acceleration = np.zeros(2)):
+    def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration, gameparams.centrecircleradius, 0)
+        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                        config.CENTRE_CIRCLE_RADIUS, 0)

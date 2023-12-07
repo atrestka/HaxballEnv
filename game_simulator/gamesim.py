@@ -1,14 +1,14 @@
-from game_simulator import playeraction, gameparams
+from game_simulator.config import config
 from game_simulator.gamesimengine import GameSimEngine
 from game_log import log
 
-import numpy as np
-import time
 
 class GameSim(GameSimEngine):
-    def __init__(self, red_player_count, blue_player_count, ball_count, printDebug = False, printDebugFreq = 600, print_score_update = False, \
-                       auto_score = False, enforce_kickoff = False, seed = -1, rand_reset = True, max_steps = -1):
-        GameSimEngine.__init__(self, red_player_count, blue_player_count, ball_count, enforce_kickoff, seed, rand_reset = rand_reset)
+    def __init__(self, red_player_count, blue_player_count, ball_count, printDebug=False, printDebugFreq=600,
+                 print_score_update=False, auto_score=False, enforce_kickoff=False, seed=-1,
+                 rand_reset=True, max_steps=-1):
+        GameSimEngine.__init__(self, red_player_count, blue_player_count, ball_count, enforce_kickoff, seed,
+                               rand_reset=rand_reset)
 
         # Sets extra information to do with. Probably a convention that I am
         self.rand_reset = rand_reset
@@ -31,8 +31,8 @@ class GameSim(GameSimEngine):
 
         if player.kick_count > 0:
             reward += 0.125
-            if ball.pos[0] > gameparams.pitchcornerx + gameparams.pitchwidth / 2:
-                relative = 2 * (ball.pos[0] - gameparams.pitchcornerx - gameparams.pitchwidth / 2) / gameparams.pitchwidth
+            if ball.pos[0] > config.PITCH_CORNER_X + config.PITCH_WIDTH / 2:
+                relative = 2 * (ball.pos[0] - config.PITCH_CORNER_X - config.PITCH_WIDTH / 2) / config.PITCH_WIDTH
                 reward += 0.25 + 0.25 * relative
 
         return reward
@@ -45,19 +45,22 @@ class GameSim(GameSimEngine):
             if self.was_point_scored:
                 print("    A point was scored, nice!")
             for obj in self.reds:
-                print("    red player at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}".format(obj.pos[0], obj.pos[1], obj.vel[0], obj.vel[1]))
+                print("    red player at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}".format(obj.pos[0], obj.pos[1],
+                                                                                              obj.vel[0], obj.vel[1]))
             for obj in self.blues:
-                print("    blue player at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}".format(obj.pos[0], obj.pos[1], obj.vel[0], obj.vel[1]))
+                print("    blue player at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}".format(obj.pos[0], obj.pos[1],
+                                                                                               obj.vel[0], obj.vel[1]))
             for obj in self.balls:
-                print("    ball at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}\n".format(obj.pos[0], obj.pos[1], obj.vel[0], obj.vel[1]))
+                print("    ball at: {:.3f}; {:.3f} with velocity {:.3f}; {:.3f}\n".format(obj.pos[0], obj.pos[1],
+                                                                                          obj.vel[0], obj.vel[1]))
         return
 
     def log(self):
         return log.Frame(
-                blues = [p.log() for p in self.blues],
-                reds  = [p.log() for p in self.reds ],
-                balls = [b.log() for b in self.balls],
-                )
+            blues=[p.log() for p in self.blues],
+            reds=[p.log() for p in self.reds],
+            balls=[b.log() for b in self.balls],
+        )
 
     def giveCommands(self, actions):
         # Gives commands to all the controllable entities in the game in the form of a list pf commands.
@@ -109,7 +112,7 @@ class GameSim(GameSimEngine):
 
             self.step()
 
-            if disp != None:
+            if disp is not None:
                 # Update the graphical interface canvas
                 disp.drawFrame(self.log())
 

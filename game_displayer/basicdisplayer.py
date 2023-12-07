@@ -1,9 +1,10 @@
 import pygame
 from pygame import gfxdraw
-from game_simulator import gameparams as gp
+from game_simulator.config import config
+
 
 class GameWindow:
-    def __init__(self, winWidth, winHeight, fps = 60, debug_surfs = []):
+    def __init__(self, winWidth, winHeight, fps=60, debug_surfs=[]):
         self.height = winHeight
         self.width = winWidth
 
@@ -16,76 +17,88 @@ class GameWindow:
 
         pygame.init()
 
-        self.win = pygame.display.set_mode( (self.width, self.height ) )
-        pygame.display.set_caption( "TEST DISPLAY" )
+        self.win = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption("TEST DISPLAY")
 
     def drawFrame(self, frame):
-        self.win.fill( (0, 0, 0 ) )
+        self.win.fill((0, 0, 0))
         # draws background
-        pygame.draw.rect(self.win, gp.bordercolour, (0, 0, gp.windowwidth, gp.windowheight))
+        pygame.draw.rect(self.win, config.BORDER_COLOUR, (0, 0, config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
         # draws ball area
-        pygame.draw.rect(self.win, gp.pitchcolour, (gp.pitchcornerx, gp.pitchcornery, gp.pitchwidth, gp.pitchheight))
+        pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.PITCH_CORNER_X, config.PITCH_CORNER_Y,
+                                                         config.PITCH_WIDTH, config.PITCH_HEIGHT))
         #draws area behind goal
-        pygame.draw.rect(self.win, gp.pitchcolour, (gp.pitchcornerx - 30, gp.goalcornery, 30, gp.goalsize))
-        pygame.draw.rect(self.win, gp.pitchcolour, (gp.windowwidth - gp.pitchcornerx, gp.goalcornery, 30, gp.goalsize))
+        pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.PITCH_CORNER_X - 30, config.GOAL_CORNER_Y, 30,
+                                                         config.GOAL_SIZE))
+        pygame.draw.rect(self.win, config.PITCH_COLOUR, (config.WINDOW_WIDTH - config.PITCH_CORNER_X,
+                                                         config.GOAL_CORNER_Y, 30, config.GOAL_SIZE))
 
         # draws pitch borders
-        pygame.draw.rect(self.win, gp.goallinecolour, (
-        gp.pitchcornerx - gp.goallinethickness // 2, gp.pitchcornery - gp.goallinethickness // 2, gp.goallinethickness,
-        gp.pitchheight + gp.goallinethickness))
-        pygame.draw.rect(self.win, gp.goallinecolour, (
-        gp.windowwidth - gp.pitchcornerx - gp.goallinethickness // 2, gp.pitchcornery - gp.goallinethickness // 2, gp.goallinethickness,
-        gp.pitchheight + gp.goallinethickness))
-        pygame.draw.rect(self.win, gp.goallinecolour, (
-        gp.pitchcornerx - gp.goallinethickness // 2, gp.pitchcornery - gp.goallinethickness // 2, gp.pitchwidth + gp.goallinethickness,
-        gp.goallinethickness))
-        pygame.draw.rect(self.win, gp.goallinecolour, (
-        gp.pitchcornerx - gp.goallinethickness // 2, gp.windowheight - gp.pitchcornery - gp.goallinethickness // 2,
-        gp.pitchwidth + gp.goallinethickness, gp.goallinethickness))
+        pygame.draw.rect(
+            self.win, config.GOAL_LINE_COLOUR, (
+                config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2,
+                config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2,
+                config.GOAL_LINE_THICKNESS,
+                config.PITCH_HEIGHT + config.GOAL_LINE_THICKNESS
+            )
+        )
+        pygame.draw.rect(
+            self.win, config.GOAL_LINE_COLOUR, (
+                config.WINDOW_WIDTH - config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2,
+                config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2, config.GOAL_LINE_THICKNESS,
+                config.PITCH_HEIGHT + config.GOAL_LINE_THICKNESS
+            )
+        )
+        pygame.draw.rect(self.win, config.GOAL_LINE_COLOUR, (
+        config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2, config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2, config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS,
+        config.GOAL_LINE_THICKNESS))
+        pygame.draw.rect(self.win, config.GOAL_LINE_COLOUR, (
+        config.PITCH_CORNER_X - config.GOAL_LINE_THICKNESS // 2, config.WINDOW_HEIGHT - config.PITCH_CORNER_Y - config.GOAL_LINE_THICKNESS // 2,
+        config.PITCH_WIDTH + config.GOAL_LINE_THICKNESS, config.GOAL_LINE_THICKNESS))
 
         cnt = 0
-        # draws goalposts
-        for goalpost in gp.goalposts:
+        # draws GOALPOSTS
+        for goalpost in config.GOALPOSTS:
             cnt += 1
-            pygame.gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], gp.goalpostradius, (0, 0, 0))
-            pygame.gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], gp.goalpostradius, (0, 0, 0))
+            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS, (0, 0, 0))
+            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS, (0, 0, 0))
             goalpostcol = (0, 0, 0)
             if cnt <= 2:
                 goalpostcol = (200, 150, 150)
             else:
                 goalpostcol = (150, 150, 200)
-            pygame.gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], gp.goalpostradius-gp.goalpostborderthickness, goalpostcol)
-            pygame.gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], gp.goalpostradius-gp.goalpostborderthickness, goalpostcol)
+            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS-config.GOALPOST_BORDER_THICKNESS, goalpostcol)
+            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS-config.GOALPOST_BORDER_THICKNESS, goalpostcol)
 
         def drawPlayer(p, colour):
             if p.action.isKicking():
-                pygame.gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                    gp.kickingcircleradius, gp.kickingcirclecolour)
-                pygame.gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                    gp.kickingcircleradius, gp.kickingcirclecolour)
+                gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
+                    config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
+                gfxdraw.aacircle(self.win, int(p.x), int(p.y),
+                    config.KICKING_CIRCLE_RADIUS, config.KICKING_CIRCLE_COLOUR)
             else:
-                pygame.gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                    gp.kickingcircleradius, (0,0,0))
-                pygame.gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                    gp.kickingcircleradius, (0,0,0))
+                gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
+                    config.KICKING_CIRCLE_RADIUS, (0,0,0))
+                gfxdraw.aacircle(self.win, int(p.x), int(p.y),
+                    config.KICKING_CIRCLE_RADIUS, (0,0,0))
 
-            pygame.gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
-                gp.playerradius-gp.kickingcirclethickness, colour)
-            pygame.gfxdraw.aacircle(self.win, int(p.x), int(p.y),
-                gp.playerradius-gp.kickingcirclethickness, colour)
+            gfxdraw.filled_circle(self.win, int(p.x), int(p.y),
+                config.PLAYER_RADIUS-config.KICKING_CIRCLE_THICKNESS, colour)
+            gfxdraw.aacircle(self.win, int(p.x), int(p.y),
+                config.PLAYER_RADIUS-config.KICKING_CIRCLE_THICKNESS, colour)
 
         for p in frame.reds:
-            drawPlayer(p, gp.redcolour)
+            drawPlayer(p, config.RED_COLOUR)
         for p in frame.blues:
-            drawPlayer(p, gp.bluecolour)
+            drawPlayer(p, config.BLUE_COLOUR)
 
         for b in frame.balls:
-            pygame.gfxdraw.filled_circle(self.win, int(b.x), int(b.y), gp.ballradius+2, (0, 0, 0))
-            pygame.gfxdraw.aacircle(self.win, int(b.x), int(b.y), gp.ballradius+2, (0, 0, 0))
-            pygame.gfxdraw.filled_circle(self.win, int(b.x), int(b.y), gp.ballradius, (255, 255, 255))
-            pygame.gfxdraw.aacircle(self.win, int(b.x), int(b.y), gp.ballradius, (255, 255, 255))
+            gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS+2, (0, 0, 0))
+            gfxdraw.aacircle(self.win, int(b.x), int(b.y), config.BALL_RADIUS+2, (0, 0, 0))
+            gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS, (255, 255, 255))
+            gfxdraw.aacircle(self.win, int(b.x), int(b.y), config.BALL_RADIUS, (255, 255, 255))
 
-        debug_pos = gp.windowwidth
+        debug_pos = config.WINDOW_WIDTH
         for s in self.debug_surfs:
             # Add the debug thing
             self.win.blit(s, (debug_pos, 0))

@@ -1,29 +1,34 @@
 from game_simulator import entities
-from game_simulator import gameparams
-from game_simulator import playeraction
+from game_simulator.config import config
 
 import numpy as np
 
+
 class GameSimEngine():
-    def __init__(self, red_player_count, blue_player_count, ball_count, enforce_kickoff = False, seed = -1, rand_reset = True):
+    def __init__(self, red_player_count, blue_player_count, ball_count,
+                 enforce_kickoff=False, seed=-1, rand_reset=True):
         # Intialise the entities
         if rand_reset:
-            self.reds = [entities.Player("red", self.getRandomPositionInThePlayingField()) for i in range(red_player_count)]
-            self.blues = [entities.Player("blue", self.getRandomPositionInThePlayingField()) for i in range(blue_player_count)]
+            self.reds = [entities.Player("red", self.getRandomPositionInThePlayingField())
+                         for i in range(red_player_count)]
+            self.blues = [entities.Player("blue", self.getRandomPositionInThePlayingField())
+                          for i in range(blue_player_count)]
             self.balls = [entities.Ball(self.getRandomPositionInThePitch()) for i in range(ball_count)]
         else:
-            red_def_pos = (gameparams.windowwidth / 3, gameparams.windowheight / 2)
-            blue_def_pos = (gameparams.windowwidth * 2 / 3, gameparams.windowheight / 2)
-            ball_def_pos = (gameparams.windowwidth / 2, gameparams.windowheight / 2)
+            red_def_pos = (config.WINDOW_WIDTH / 3, config.WINDOW_HEIGHT / 2)
+            blue_def_pos = (config.WINDOW_WIDTH * 2 / 3, config.WINDOW_HEIGHT / 2)
+            ball_def_pos = (config.WINDOW_WIDTH / 2, config.WINDOW_HEIGHT / 2)
             self.reds = [entities.Player("red", red_def_pos) for i in range(red_player_count)]
             self.blues = [entities.Player("blue", blue_def_pos) for i in range(blue_player_count)]
             self.balls = [entities.Ball(ball_def_pos) for i in range(ball_count)]
-        self.goalposts = [entities.GoalPost(np.array((gameparams.pitchcornerx, gameparams.goalcornery))),
-                          entities.GoalPost(np.array((gameparams.pitchcornerx, gameparams.goalcornery + gameparams.goalsize))),
-                          entities.GoalPost(np.array((gameparams.windowwidth - gameparams.pitchcornerx, gameparams.goalcornery))),
-                          entities.GoalPost(np.array((gameparams.windowwidth - gameparams.pitchcornerx, gameparams.goalcornery + gameparams.goalsize)))]
-        self.centre_block = entities.CentreCircleBlock(np.array(gameparams.ballstart))
-
+        self.goalposts = [
+            entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y))),
+            entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y + config.GOAL_SIZE))),
+            entities.GoalPost(np.array((config.WINDOW_WIDTH - config.PITCH_CORNER_X, config.GOAL_CORNER_Y))),
+            entities.GoalPost(np.array((config.WINDOW_WIDTH - config.PITCH_CORNER_X,
+                                        config.GOAL_CORNER_Y + config.GOAL_SIZE)))
+        ]
+        self.centre_block = entities.CentreCircleBlock(np.array(config.BALL_START_POSITION))
 
         # Create useful groupings
         self.players = self.reds + self.blues
@@ -51,10 +56,11 @@ class GameSimEngine():
         self.enforce_kickoff = enforce_kickoff
 
     def getRandomPositionInThePlayingField(self):
-        return np.array([np.random.random_sample() * 840,  np.random.random_sample() * 400]).astype(float)
+        return np.array([np.random.random_sample() * 840, np.random.random_sample() * 400]).astype(float)
 
     def getRandomPositionInThePitch(self):
-        return np.array([gameparams.pitchcornerx + np.random.random_sample() * 580, gameparams.pitchcornery + np.random.random_sample() * 200]).astype(float)
+        return np.array([config.PITCH_CORNER_X + np.random.random_sample() * 580,
+                         config.PITCH_CORNER_Y + np.random.random_sample() * 200]).astype(float)
 
     def keepOutOfCentre(self, obj):
         # Moves an object out of the centre area. Called during kickoff
@@ -66,15 +72,15 @@ class GameSimEngine():
             obj.pos[0] = self.centre_block.pos[0] - vector[0] / np.linalg.norm(vector)
             obj.pos[1] = self.centre_block.pos[1] - vector[1] / np.linalg.norm(vector)
             self.resolveCollision(self.centre_block, obj, 1)
-            self.centre_block.pos[0] = int(self.centre_block.pos[0]) # Idk why this even exists
+            self.centre_block.pos[0] = int(self.centre_block.pos[0])  # Idk why this even exists
             self.centre_block.pos[1] = int(self.centre_block.pos[1])
 
-    def keepEntityInMovementSpace(self, obj, is_ball = 0):
+    def keepEntityInMovementSpace(self, obj, is_ball=0):
         # should keep things on the board where the movement happens
 
-        if is_ball == False:
-            movement_space_x = [obj.radius, gameparams.windowwidth - obj.radius]
-            movement_space_y = [obj.radius, gameparams.windowheight - obj.radius]
+        if not is_ball:
+            movement_space_x = [obj.radius, config.WINDOW_WIDTH - obj.radius]
+            movement_space_y = [obj.radius, config.WINDOW_HEIGHT - obj.radius]
 
             if obj.pos[0] <= movement_space_x[0] or obj.pos[0] >= movement_space_x[1]:
                 obj.vel[0] = 0
@@ -89,13 +95,13 @@ class GameSimEngine():
                 if obj.pos[1] >= movement_space_y[1]:
                     obj.pos[1] = movement_space_y[1]
         else:
-            movement_space_x = [gameparams.pitchcornerx + obj.radius,
-                                gameparams.pitchcornerx + gameparams.pitchwidth - obj.radius]
-            movement_space_y = [gameparams.pitchcornery + obj.radius,
-                                gameparams.pitchcornery + gameparams.pitchheight - obj.radius]
+            movement_space_x = [config.PITCH_CORNER_X + obj.radius,
+                                config.PITCH_CORNER_X + config.PITCH_WIDTH - obj.radius]
+            movement_space_y = [config.PITCH_CORNER_Y + obj.radius,
+                                config.PITCH_CORNER_Y + config.PITCH_HEIGHT - obj.radius]
 
             if obj.pos[0] <= movement_space_x[0] or obj.pos[0] >= movement_space_x[1]:
-                if obj.pos[1] >= gameparams.goaly[0] and obj.pos[1] <= gameparams.goaly[1]:
+                if obj.pos[1] >= config.GOAL_Y[0] and obj.pos[1] <= config.GOAL_Y[1]:
                     pass
                 else:
                     obj.vel[0] = - 0.5 * obj.vel[0]
@@ -114,13 +120,13 @@ class GameSimEngine():
 
     def makeEntityHitBall(self, obj, ball):
         # Updates the ball's velocity since a kick call was called from obj to ball
-        ball.vel = ball.vel + gameparams.kickstrength * ball.inv_mass * obj.getDirectionTo(ball)
+        ball.vel = ball.vel + config.KICK_STRENGTH * ball.inv_mass * obj.getDirectionTo(ball)
         # Update the number of collisions the player has made
         obj.kick_count += 1
 
         return
 
-    def resolveCollision(self, obj1, obj2, is_obj1_static = 0):
+    def resolveCollision(self, obj1, obj2, is_obj1_static=0):
         # if there is a collision between the two objects, resolve it. Assumes two circles
         # Has flag for the case where obj2 is static and doesn't get any momentum
         direction = (obj1.pos - obj2.pos)
@@ -135,7 +141,7 @@ class GameSimEngine():
         collisiontangent = np.array([direction[1], - direction[0]]) / (np.linalg.norm(direction))
 
         bouncingq = obj1.bouncingquotient * obj2.bouncingquotient
-        if is_obj1_static == False:
+        if not is_obj1_static:
             centerofmass = (obj1.pos * obj1.mass + obj2.pos * obj2.mass) / (obj1.mass + obj2.mass)
 
             # updates object components
@@ -143,16 +149,26 @@ class GameSimEngine():
             obj2normalvelocity = np.dot(np.array(obj2.vel), collisionnormal)
 
             # inelastic collision formula
-            obj1newnormalvelocity = (bouncingq * obj2.mass * (obj2normalvelocity - obj1normalvelocity) + obj1.mass * obj1normalvelocity + obj2.mass * obj2normalvelocity) / (obj1.mass + obj2.mass)
-            obj2newnormalvelocity = (bouncingq * obj1.mass * (obj1normalvelocity - obj2normalvelocity) + obj2.mass * obj2normalvelocity + obj1.mass * obj1normalvelocity) / (obj2.mass + obj1.mass)
+            obj1newnormalvelocity = (bouncingq * obj2.mass * (obj2normalvelocity - obj1normalvelocity)
+                                     + obj1.mass * obj1normalvelocity + obj2.mass * obj2normalvelocity) \
+                / (obj1.mass + obj2.mass)
+            obj2newnormalvelocity = (bouncingq * obj1.mass * (obj1normalvelocity - obj2normalvelocity)
+                                     + obj2.mass * obj2normalvelocity + obj1.mass * obj1normalvelocity) \
+                / (obj2.mass + obj1.mass)
             obj1tangentvelocity = np.dot(np.array(obj1.vel), collisiontangent)
             obj2tangentvelocity = np.dot(np.array(obj2.vel), collisiontangent)
 
-            obj1.vel = obj1newnormalvelocity * np.array(collisionnormal) + obj1tangentvelocity * np.array(collisiontangent)
-            obj2.vel = obj2newnormalvelocity * np.array(collisionnormal) + obj2tangentvelocity * np.array(collisiontangent)
+            obj1.vel = obj1newnormalvelocity * np.array(collisionnormal) \
+                + obj1tangentvelocity * np.array(collisiontangent)
+            obj2.vel = obj2newnormalvelocity * np.array(collisionnormal) \
+                + obj2tangentvelocity * np.array(collisiontangent)
 
-            obj1.pos = centerofmass + ((obj1.radius + obj2.radius) + bouncingq * (obj1.radius + obj2.radius - distance)) * collisionnormal * obj2.mass / (obj1.mass + obj2.mass)
-            obj2.pos = centerofmass - ((obj1.radius + obj2.radius) + bouncingq * (obj1.radius + obj2.radius - distance)) * collisionnormal * obj1.mass / (obj1.mass + obj2.mass)
+            obj1.pos = centerofmass + ((obj1.radius + obj2.radius)
+                                       + bouncingq * (obj1.radius + obj2.radius - distance)) \
+                * collisionnormal * obj2.mass / (obj1.mass + obj2.mass)
+            obj2.pos = centerofmass - ((obj1.radius + obj2.radius)
+                                       + bouncingq * (obj1.radius + obj2.radius - distance)) \
+                * collisionnormal * obj1.mass / (obj1.mass + obj2.mass)
         else:
             # updates obj2 components since that's the only moving part
             obj1normalvelocity = np.dot(np.array(obj1.vel), collisionnormal)
@@ -172,21 +188,21 @@ class GameSimEngine():
 
         # blocks the players that aren't kicking off from entering the centre/other half
         if self.enforce_kickoff:
-            if self.has_the_game_been_kicked_off == False:
-                if self.red_last_goal == True:
+            if not self.has_the_game_been_kicked_off:
+                if self.red_last_goal:
                     for i in range(len(self.reds)):
                         player = self.reds[i]
-                        if player.pos[0] >= gameparams.windowwidth // 2 - player.radius:
+                        if player.pos[0] >= config.WINDOW_WIDTH // 2 - player.radius:
                             player.vel[0] = 0
-                            player.pos[0] = gameparams.windowwidth // 2 - player.radius
+                            player.pos[0] = config.WINDOW_WIDTH // 2 - player.radius
 
                         self.keepOutOfCentre(self.reds[i])
                 else:
                     for i in range(len(self.blues)):
                         player = self.blues[i]
-                        if player.pos[0] <= gameparams.windowwidth // 2 + player.radius:
+                        if player.pos[0] <= config.WINDOW_WIDTH // 2 + player.radius:
                             player.vel[0] = 0
-                            player.pos[0] = gameparams.windowwidth // 2 + player.radius
+                            player.pos[0] = config.WINDOW_WIDTH // 2 + player.radius
 
                         self.keepOutOfCentre(self.blues[i])
 
@@ -224,7 +240,7 @@ class GameSimEngine():
         for entity in self.moving_objects:
             entity.updatePosition()
 
-    def resetMap(self, reset_type = "random"):
+    def resetMap(self, reset_type="random"):
         # Reset the positions of the entities in the sim. Possible reset options are:
         # 1) random reset for all moving entities
         # 2) ball spawned in center, players randomly
@@ -248,17 +264,17 @@ class GameSimEngine():
             self.has_the_game_been_kicked_off = False
         return
 
-    def updateScore(self, reset_params = "random"):
+    def updateScore(self, reset_params="random"):
         # TODO: Fuck this.
         game_ended = False
         for ball in self.balls:
-            if ball.pos[0] <= gameparams.pitchcornerx:
+            if ball.pos[0] <= config.PITCH_CORNER_X:
                 self.blue_score += 1
                 self.red_last_goal = False
                 self.was_point_scored = True
                 game_ended = True
                 self.resetMap(reset_params)
-            elif ball.pos[0] >= gameparams.windowwidth - gameparams.pitchcornerx:
+            elif ball.pos[0] >= config.WINDOW_WIDTH - config.PITCH_CORNER_X:
                 self.red_score += 1
                 self.red_last_goal = True
                 self.was_point_scored = True
@@ -267,11 +283,11 @@ class GameSimEngine():
         return game_ended
 
     def checkGoals(self):
-        #Checks all the balls, returns tuple of (red scores, blue scores)
-        countedGoals = [0,0]
+        # Checks all the balls, returns tuple of (red scores, blue scores)
+        countedGoals = [0, 0]
         for ball in self.balls:
-            if ball.pos[0] <= gameparams.pitchcornerx:
+            if ball.pos[0] <= config.PITCH_CORNER_X:
                 countedGoals[1] += 1
-            elif ball.pos[0] >= gameparams.windowwidth - gameparams.pitchcornerx:
+            elif ball.pos[0] >= config.WINDOW_WIDTH - config.PITCH_CORNER_X:
                 countedGoals[0] += 1
         return countedGoals
