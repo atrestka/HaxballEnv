@@ -1,19 +1,19 @@
-from game_simulator import gamesim, playeraction
-from game_displayer import basicdisplayer
+from haxball_gym.game_simulator import gamesim, playeraction
+from haxball_gym.game_displayer import basicdisplayer
 from haxball_gym.config import config
-
 
 import numpy as np
 
 
 class HaxballEnvironment:
-    def __init__(self, step_len=15, max_steps=400, norming=True):
+    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
         self.step_len = step_len
         self.max_steps = max_steps
 
         self.norming = norming
 
-        self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS)
+        self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS,
+                                        rand_reset=rand_reset)
         self.game_sim.resetMap()
 
         self.steps_since_reset = 0

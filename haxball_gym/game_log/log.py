@@ -1,5 +1,5 @@
-from game_simulator import playeraction
-from game_simulator.config import config
+from haxball_gym.game_simulator import playeraction
+from haxball_gym.config import config
 from dataclasses import dataclass, field
 from typing import List
 import pickle
@@ -21,7 +21,7 @@ class BallState:
         else:
             raise ValueError
         if normalise:
-            v_max = config.accel * config.PLAYER_DAMPING / (1 - config.PLAYER_DAMPING)
+            v_max = config.ACCELARATION * config.PLAYER_DAMPING / (1 - config.PLAYER_DAMPING)
             l = [l[0] / config.WINDOW_WIDTH, l[1] / config.WINDOW_HEIGHT, l[2] / v_max, l[3] / v_max]
         return l
 
@@ -44,6 +44,7 @@ class Frame:
     blues: List[PlayerState]
     reds: List[PlayerState]
     balls: List[BallState]
+    frame: int = 0
 
     def posToNp(self, myTeam="red", me=0, normalise=True):
         if myTeam == "blue":

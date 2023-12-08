@@ -10,9 +10,9 @@ class Configuration:
     ################################
 
     # player and ball parameters
-    NUM_RED_PLAYERS = 1
-    NUM_BLUE_PLAYERS = 1
-    NUM_BALLS = 1
+    NUM_RED_PLAYERS = 2
+    NUM_BLUE_PLAYERS = 3
+    NUM_BALLS = 3
 
     # field size parameters
     WINDOW_WIDTH = 840

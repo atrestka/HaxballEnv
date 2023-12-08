@@ -1,6 +1,6 @@
 import pygame
 from pygame import gfxdraw
-from game_simulator.config import config
+from haxball_gym.config import config
 
 
 class GameWindow:

@@ -1,6 +1,6 @@
-from game_simulator.config import config
-from game_simulator.gamesimengine import GameSimEngine
-from game_log import log
+from haxball_gym.config import config
+from haxball_gym.game_simulator.gamesimengine import GameSimEngine
+from haxball_gym.game_log import log
 
 
 class GameSim(GameSimEngine):
@@ -60,6 +60,7 @@ class GameSim(GameSimEngine):
             blues=[p.log() for p in self.blues],
             reds=[p.log() for p in self.reds],
             balls=[b.log() for b in self.balls],
+            frame=self.steps
         )
 
     def giveCommands(self, actions):

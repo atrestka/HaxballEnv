@@ -1,5 +1,5 @@
 from game_simulator import playeraction
-from move_displayer import movedisplayer
+from haxball_gym.game_displayer import movedisplayer
 from random import randrange
 import random
 import numpy as np

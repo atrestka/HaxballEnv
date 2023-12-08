@@ -1,5 +1,5 @@
-from game_simulator import entities
-from game_simulator.config import config
+from haxball_gym.game_simulator import entities
+from haxball_gym.config import config
 
 import numpy as np
 
@@ -18,9 +18,31 @@ class GameSimEngine():
             red_def_pos = (config.WINDOW_WIDTH / 3, config.WINDOW_HEIGHT / 2)
             blue_def_pos = (config.WINDOW_WIDTH * 2 / 3, config.WINDOW_HEIGHT / 2)
             ball_def_pos = (config.WINDOW_WIDTH / 2, config.WINDOW_HEIGHT / 2)
-            self.reds = [entities.Player("red", red_def_pos) for i in range(red_player_count)]
-            self.blues = [entities.Player("blue", blue_def_pos) for i in range(blue_player_count)]
-            self.balls = [entities.Ball(ball_def_pos) for i in range(ball_count)]
+
+            red_start_positions = [red_def_pos for _ in range(red_player_count)]
+            for i in range(red_player_count):
+                red_start_positions[i] = (red_start_positions[i][0],
+                                          red_start_positions[i][1] - config.PLAYER_RADIUS * 5
+                                          * (red_player_count // 2) 
+                                          + i * config.PLAYER_RADIUS * 5)
+
+            blue_start_positions = [blue_def_pos for _ in range(blue_player_count)]
+            for i in range(blue_player_count):
+                blue_start_positions[i] = (blue_start_positions[i][0],
+                                           blue_start_positions[i][1] - config.PLAYER_RADIUS * 5
+                                           * (blue_player_count // 2) 
+                                           + i * config.PLAYER_RADIUS * 5)
+
+            self.reds = [entities.Player("red", red_start_positions[i]) for i in range(red_player_count)]
+            self.blues = [entities.Player("blue", blue_start_positions[i]) for i in range(blue_player_count)]
+
+            ball_start_positions = [ball_def_pos for _ in range(ball_count)]
+            for i in range(ball_count):
+                ball_start_positions[i] = (ball_start_positions[i][0],
+                                           ball_start_positions[i][1] - config.BALL_RADIUS * 5 * (ball_count // 2) 
+                                           + i * config.BALL_RADIUS * 5)
+
+            self.balls = [entities.Ball(ball_start_positions[i]) for i in range(ball_count)]
         self.goalposts = [
             entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y))),
             entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y + config.GOAL_SIZE))),
@@ -139,6 +161,9 @@ class GameSimEngine():
         # calculates normal and tangent vectors
         collisionnormal = direction / distance
         collisiontangent = np.array([direction[1], - direction[0]]) / (np.linalg.norm(direction))
+
+        if collisionnormal[0] is np.NaN:
+            raise ValueError()
 
         bouncingq = obj1.bouncingquotient * obj2.bouncingquotient
         if not is_obj1_static:

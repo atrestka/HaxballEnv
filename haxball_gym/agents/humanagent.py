@@ -1,8 +1,8 @@
-from game_simulator import playeraction
+from haxball_gym.game_simulator import playeraction
 
 
 class HumanAgent():
-    def __init__(self, keybindings, gui):
+    def __init__(self, keybindings, gui=None):
         # Keybindings is a list containing the strings of the keybindings
 
         # Movement keys of the agent in the following order: up, right, down, left
@@ -11,7 +11,11 @@ class HumanAgent():
         # Kicking key for the agent
         self.kick = keybindings[4]
 
+        # gui gives the human commands (the pygame gui)
         self.gui = gui
+
+        # this is a human agent
+        self.requires_human_input = True
 
     def getAction(self, frame=None):
         # Ignore frame
