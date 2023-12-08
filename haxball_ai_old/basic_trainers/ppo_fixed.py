@@ -16,7 +16,6 @@ use_cuda = torch.cuda.is_available()
 device   = torch.device("cuda" if use_cuda else "cpu")
 
 
-
 class PPOTrainer:
     def __init__(self, model, env_constructor, worker_num,
                  learning_rate =3e-4, gamma = 1 - 3e-3, tau = 0.95, critic_param = 0.5,
@@ -39,9 +38,6 @@ class PPOTrainer:
         self.state = torch.FloatTensor(self.envs.reset()).to(device)
 
         print("Done.")
-
-
-
 
     def train(self, steps):
         frame_idx = 0

@@ -1,7 +1,4 @@
-from game_simulator import playeraction
-from haxball_gym.game_displayer import movedisplayer
-from random import randrange
-import random
+from haxball_gym.game_simulator import playeraction
 import numpy as np
 import torch
 
@@ -28,7 +25,7 @@ class ACAgent():
 
         if not self.value_is_prob:
             # win_prob = torch.nn.Sigmoid()(win_prob)
-            win_prob = (win_prob + 1.0)/2
+            win_prob = (win_prob + 1.0) / 2
 
         # if torch.cuda.is_available():
         #    movepred = movepred.cpu()
@@ -38,9 +35,10 @@ class ACAgent():
             for i in range(len(action_pred_data)):
                 if len(action_pred_data[i]) == 1:
                     p = action_pred_data[i].detach().numpy()[0]
-                    action_data.append(np.random.choice([False, True], p = [1 - p, p]))
+                    action_data.append(np.random.choice([False, True], p=[1 - p, p]))
                 else:
-                    action_data.append(np.random.choice(len(action_pred_data[i]), p = action_pred_data[i].detach().numpy()))
+                    action_data.append(np.random.choice(len(action_pred_data[i]),
+                                                        p=action_pred_data[i].detach().numpy()))
         elif self.method == "max":
             for i in range(len(action_pred_data)):
                 action_data.append(np.argmax(action_pred_data[i].detach().numpy()))
@@ -53,7 +51,6 @@ class ACAgent():
             action = action.flipped()
         else:
             raise ValueError
-
 
         if self.debug_surf:
             move_probs = []

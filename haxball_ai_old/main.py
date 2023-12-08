@@ -4,7 +4,7 @@ from game_simulator import gamesim
 from game_displayer import basicdisplayer
 from move_displayer import movedisplayer
 from game_simulator import gameparams as gp
-from agents import ACagent
+from haxball_ai.agents import ACagent
 from agents import humanACagent
 from agents import randomagent
 import model_testers.duel_trials

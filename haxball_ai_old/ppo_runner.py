@@ -1,7 +1,7 @@
 import basic_trainers.ppo_fixed as ppo
 import torch
 import gym_haxball.solofixedgym as solo
-from network import SebPolicy
+from haxball_ai.network import SebPolicy
 
 if __name__ == "__main__":
     mod1 = SebPolicy()

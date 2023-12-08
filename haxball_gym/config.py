@@ -108,6 +108,9 @@ class Configuration:
     # defines goal width
     GOAL_Y = [GOAL_CORNER_Y, GOAL_CORNER_Y + GOAL_SIZE]
 
+    # number of things in the game
+    NUM_ENTITIES = NUM_RED_PLAYERS + NUM_BLUE_PLAYERS + NUM_BALLS
+
 
 # define the config
 config = Configuration()

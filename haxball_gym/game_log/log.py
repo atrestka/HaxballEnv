@@ -46,22 +46,34 @@ class Frame:
     balls: List[BallState]
     frame: int = 0
 
-    def posToNp(self, myTeam="red", me=0, normalise=True):
+    def posToNp(self, myTeam="red", me=0, normalise=True, pad_to_n_players=0, pad_to_n_balls=0):
         if myTeam == "blue":
             return np.array(
                 self.blues[me].posToList(myTeam, normalise)
                 + [x for p in self.blues[me + 1:] for x in p.posToList(myTeam, normalise)]
                 + [x for p in self.blues[:me] for x in p.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.blues[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
                 + [x for p in self.reds for x in p.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.blues[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_players - len(self.reds)))]
                 + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.balls[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
             )
         elif myTeam == "red":
             return np.array(
                 self.reds[me].posToList(myTeam, normalise)
                 + [x for p in self.reds[:me] for x in p.posToList(myTeam, normalise)]
                 + [x for p in self.reds[me + 1:] for x in p.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.blues[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
                 + [x for p in self.blues for x in p.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.blues[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
                 + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
+                + [x * 0 for x in self.balls[0].posToList(myTeam, normalise)
+                   for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
             )
         else:
             raise ValueError

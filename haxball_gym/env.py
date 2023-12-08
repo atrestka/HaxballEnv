@@ -1,3 +1,5 @@
+from gym import Env
+import gym
 from haxball_gym.game_simulator import gamesim, playeraction
 from haxball_gym.game_displayer import basicdisplayer
 from haxball_gym.config import config
@@ -5,20 +7,20 @@ from haxball_gym.config import config
 import numpy as np
 
 
-class HaxballEnvironment:
+class HaxballEnvironment(Env):
     def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
         self.step_len = step_len
         self.max_steps = max_steps
-
         self.norming = norming
-
         self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS,
                                         rand_reset=rand_reset)
         self.game_sim.resetMap()
-
         self.steps_since_reset = 0
-
         self.display = None
+
+        # define gym spaces
+        self.action_space = gym.spaces.Discrete(18 * (config.NUM_RED_PLAYERS + config.NUM_BLUE_PLAYERS))
+        self.observation_space = get_observation_space()
 
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
@@ -30,7 +32,6 @@ class HaxballEnvironment:
         # [observation (object), reward (float), done (bool), info (dict)]
         # Actions must be integeres in the range [0, 18)
         self.steps_since_reset += 1
-
         self.game_sim.giveCommands([playeraction.Action(action) for action in action_list])
 
         for i in range(self.step_len):
@@ -74,3 +75,15 @@ class HaxballEnvironment:
             return -1
         else:
             return 0
+
+
+def get_observation_space():
+    max_player_vals = [config.WINDOW_WIDTH, config.WINDOW_HEIGHT, 100, 100]
+    min_player_vals = [0, 0, -100, -100]
+    min_vals = sum([min_player_vals for _ in range(config.NUM_ENTITIES)], [])
+    max_vals = sum([max_player_vals for _ in range(config.NUM_ENTITIES)], [])
+
+    low = np.array(min_vals).astype(float)
+    high = np.array(max_vals).astype(float)
+    shape = (len(low),)
+    return gym.spaces.Box(np.float32(low), np.float32(high), shape)
