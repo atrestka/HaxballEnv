@@ -18,4 +18,4 @@ class RandomAgent():
         if step % self.frames_per_action == 0:
             self.current_action = playeraction.Action.randomAction()
 
-        return self.current_action
+        return [self.current_action]

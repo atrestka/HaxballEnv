@@ -71,7 +71,7 @@ def play_visual_games(
             # Query each agent on what commands should be sent to the game simulator
             if display is not None:
                 display.getInput()
-            game.giveCommands([a.getAction(game.log()) for a in agents])
+            game.giveCommands(sum([a.getAction(game.log()) for a in agents], []))
 
             for i in range(step_length):
                 game_ended = game_ended or game.step()

@@ -82,6 +82,7 @@ class GameSim(GameSimEngine):
         self.steps += 1
         self.was_point_scored = False
         game_ended = False
+        self.was_ball_touched = False
 
         # Update positions
         self.updatePositions()

@@ -62,6 +62,7 @@ class GameSimEngine():
         self.red_last_goal = False
         # Flag showing whether a point was scored in the current step
         self.was_point_scored = False
+        self.was_ball_touched = False
 
         self.red_score = 0
         self.blue_score = 0
@@ -156,7 +157,7 @@ class GameSimEngine():
 
         # if the objects aren't overlapping, don't even bother resolving
         if distance > obj1.radius + obj2.radius:
-            return
+            return False
 
         # calculates normal and tangent vectors
         collisionnormal = direction / distance
@@ -208,6 +209,8 @@ class GameSimEngine():
 
             obj2.pos = obj1.pos - collisionnormal * (obj1.radius + obj2.radius)
 
+            return True
+
     def detectAndResolveCollisions(self):
         # Handle ALL the collision in the sim, including borders, entities etc.
 
@@ -257,6 +260,7 @@ class GameSimEngine():
                     if player.current_action.isKicking() and player.can_kick:
                         self.makeEntityHitBall(player, ball)
                         player.can_kick = False
+                        self.was_ball_touched = True
             if not player.current_action.isKicking():
                 player.can_kick = True
 

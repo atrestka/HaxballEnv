@@ -101,5 +101,6 @@ red_agent = haxball_gym.HumanAgent(default_red_bindings)
 red_random = haxball_gym.RandomAgent(10)
 blue_agent = haxball_gym.HumanAgent(default_blue_bindings)
 blue_random = haxball_gym.RandomAgent(10)
+idle_agent = haxball_gym.IdleAgent()
 
-haxball_gym.play_visual_games(red_agents=[red_random], blue_agents=[])
+haxball_gym.play_visual_games(red_agents=[red_agent], blue_agents=[])

@@ -1,17 +1,18 @@
 from gym import Env
 import gym
-from haxball_gym.game_simulator import gamesim, playeraction
+from haxball_gym.game_simulator import gamesim
 from haxball_gym.game_displayer import basicdisplayer
 from haxball_gym.config import config
 
 import numpy as np
 
 
-class HaxballEnvironment(Env):
+class HaxballGymEnvironment(Env):
     def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
         self.step_len = step_len
         self.max_steps = max_steps
         self.norming = norming
+
         self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS,
                                         rand_reset=rand_reset)
         self.game_sim.resetMap()
@@ -19,7 +20,8 @@ class HaxballEnvironment(Env):
         self.display = None
 
         # define gym spaces
-        self.action_space = gym.spaces.Discrete(18 * (config.NUM_RED_PLAYERS + config.NUM_BLUE_PLAYERS))
+        self.action_space = gym.spaces.MultiDiscrete([18 for _ in
+                                                      range(config.NUM_BLUE_PLAYERS + config.NUM_RED_PLAYERS)])
         self.observation_space = get_observation_space()
 
     def getState(self):
@@ -27,27 +29,33 @@ class HaxballEnvironment(Env):
         # That's desired so the state is in an easier to manipulate form.
         return np.array(self.game_sim.log().posToNp("red", 0, self.norming))
 
-    def step(self, action_list):
-        # advances the simulator by step_len number of steps. Returns a list of
-        # [observation (object), reward (float), done (bool), info (dict)]
-        # Actions must be integeres in the range [0, 18)
-        self.steps_since_reset += 1
-        self.game_sim.giveCommands([playeraction.Action(action) for action in action_list])
+    def getActions(self, action_list):
+        raise NotImplementedError
 
+    def step(self, action_list):
+        
+        self.steps_since_reset += 1
+        actions = self.getActions(action_list)
+
+        self.game_sim.giveCommands(actions)
+
+        ball_touched = False
         for i in range(self.step_len):
             self.game_sim.step()
+            ball_touched = ball_touched or self.game_sim.was_ball_touched
             goal = self.goalScored()
             # If a goal is scored return instantly
             if goal == 1:
-                return [self.getState(), 1.0, True, {}]
+                return [self.getState(), 1.0 * config.WIN_REWARD, True, {}]
             elif goal == -1:
-                return [self.getState(), -1.0, True, {}]
+                return [self.getState(), -1.0 * config.WIN_REWARD, True, {}]
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
-            return [self.getState(), 0.0, True, {}]
+            return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, True, {}]
         else:
-            return [self.getState(), 0.0, False, {}]
+            print(self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD)
+            return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, False, {}]
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it

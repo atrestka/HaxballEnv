@@ -28,4 +28,4 @@ class HumanAgent():
         raw_action = playeraction.binaryToRaw(*movements, self.gui.isKeyPressed(self.kick))
         action = playeraction.Action(*raw_action)
 
-        return action
+        return [action]

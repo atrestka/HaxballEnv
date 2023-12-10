@@ -12,4 +12,4 @@ class IdleAgent():
         _ = frame
         # Returns raw action of the agent based on the key presses queried from
         # the gui. Returns (dir_idx, kicking_state)
-        return playeraction.Action(0)
+        return [playeraction.Action(0)]

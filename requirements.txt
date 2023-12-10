@@ -1,3 +1,4 @@
 pygame
 torch
 gym
+stable_baselines3

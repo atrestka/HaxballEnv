@@ -10,9 +10,9 @@ class Configuration:
     ################################
 
     # player and ball parameters
-    NUM_RED_PLAYERS = 2
-    NUM_BLUE_PLAYERS = 3
-    NUM_BALLS = 3
+    NUM_RED_PLAYERS = 1
+    NUM_BLUE_PLAYERS = 0
+    NUM_BALLS = 1
 
     # field size parameters
     WINDOW_WIDTH = 840
@@ -49,6 +49,10 @@ class Configuration:
     GOAL_LINE_THICKNESS = 3
     KICKING_CIRCLE_RADIUS = 15
     KICKING_CIRCLE_THICKNESS = 2
+
+    # reward parameters
+    WIN_REWARD = 100
+    BALL_PROXIMITY_REWARD = 1
 
     ################################
     ## PYGAME VISUALIZER SETTINGS ##
