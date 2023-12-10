@@ -1,6 +1,6 @@
-from haxball_gym.config import config
-from haxball_gym.game_simulator import playeraction
-from haxball_gym.game_log import log
+from haxballgym.config import config
+from haxballgym.game_simulator import playeraction
+from haxballgym.game_log import log
 
 import numpy as np
 

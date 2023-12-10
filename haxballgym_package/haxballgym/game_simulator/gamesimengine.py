@@ -1,5 +1,5 @@
-from haxball_gym.game_simulator import entities
-from haxball_gym.config import config
+from haxballgym.game_simulator import entities
+from haxballgym.config import config
 
 import numpy as np
 

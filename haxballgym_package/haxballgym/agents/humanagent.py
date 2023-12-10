@@ -1,4 +1,4 @@
-from haxball_gym.game_simulator import playeraction
+from haxballgym.game_simulator import playeraction
 
 
 class HumanAgent():

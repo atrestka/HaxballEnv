@@ -1,4 +1,4 @@
-from haxball_gym.pygame_player import play_visual_games
+from haxballgym.pygame_player import play_visual_games
 
 
 def play_arena_games(red_agents, blue_agents, games, step_len=1, max_steps=200, randStart=False):

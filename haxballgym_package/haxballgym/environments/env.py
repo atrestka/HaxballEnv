@@ -1,8 +1,8 @@
 from gym import Env
 import gym
-from haxball_gym.game_simulator import gamesim
-from haxball_gym.game_displayer import basicdisplayer
-from haxball_gym.config import config
+from haxballgym.game_simulator import gamesim
+from haxballgym.game_displayer import basicdisplayer
+from haxballgym.config import config
 
 import numpy as np
 
@@ -54,7 +54,6 @@ class HaxballGymEnvironment(Env):
         if self.steps_since_reset >= self.max_steps:
             return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, True, {}]
         else:
-            print(self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD)
             return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, False, {}]
 
     def render(self, mode='human'):

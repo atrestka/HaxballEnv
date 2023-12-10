@@ -1,10 +1,10 @@
 import os
 
-from haxball_gym.game_displayer import basicdisplayer
-from haxball_gym.config import config
-from haxball_gym.game_simulator import gamesim
-from haxball_gym.game_log import log
-from haxball_gym.game_displayer import movedisplayer
+from haxballgym.game_displayer import basicdisplayer
+from haxballgym.config import config
+from haxballgym.game_simulator import gamesim
+from haxballgym.game_log import log
+from haxballgym.game_displayer import movedisplayer
 
 
 def play_visual_games(

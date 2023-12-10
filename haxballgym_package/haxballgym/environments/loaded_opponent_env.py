@@ -1,5 +1,5 @@
-from haxball_gym.environments.env import HaxballGymEnvironment
-from haxball_gym.game_simulator import playeraction
+from haxballgym.environments.env import HaxballGymEnvironment
+from haxballgym.game_simulator import playeraction
 
 
 class LoadedOpponentEnv(HaxballGymEnvironment):
@@ -17,7 +17,6 @@ class LoadedOpponentEnv(HaxballGymEnvironment):
         # [observation (object), reward (float), done (bool), info (dict)]
         # Actions must be integeres in the range [0, 18)
 
-        print(self.opponent)
         opponent_action = self.opponent.getAction(self.game_sim.log())
 
         # put opponent action into correct type

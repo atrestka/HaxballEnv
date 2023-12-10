@@ -1,6 +1,6 @@
-from haxball_gym.environments.env import HaxballGymEnvironment
-from haxball_gym.game_simulator import playeraction
-from haxball_gym.config import config
+from haxballgym.environments.env import HaxballGymEnvironment
+from haxballgym.game_simulator import playeraction
+from haxballgym.config import config
 
 
 class SinglePlayerEnvironment(HaxballGymEnvironment):
@@ -11,8 +11,6 @@ class SinglePlayerEnvironment(HaxballGymEnvironment):
         HaxballGymEnvironment.__init__(self, step_len, max_steps, norming, rand_reset)
 
     def getActions(self, action_list):
-        print(action_list)
-        print(type(action_list))
         if action_list is not list:
             action_list = action_list.astype(int)
         # advances the simulator by step_len number of steps. Returns a list of

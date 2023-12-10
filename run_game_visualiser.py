@@ -1,5 +1,5 @@
 import argparse
-import haxball_gym
+import haxballgym
 
 
 # Example command line code:
@@ -97,10 +97,10 @@ def parse_from_cmd():
 default_red_bindings = ('w', 'd', 's', 'a', 'c')
 default_blue_bindings = ('i', 'l', 'k', 'j', '.')
 
-red_agent = haxball_gym.HumanAgent(default_red_bindings)
-red_random = haxball_gym.RandomAgent(10)
-blue_agent = haxball_gym.HumanAgent(default_blue_bindings)
-blue_random = haxball_gym.RandomAgent(10)
-idle_agent = haxball_gym.IdleAgent()
+red_agent = haxballgym.HumanAgent(default_red_bindings)
+red_random = haxballgym.RandomAgent(10)
+blue_agent = haxballgym.HumanAgent(default_blue_bindings)
+blue_random = haxballgym.RandomAgent(10)
+idle_agent = haxballgym.IdleAgent()
 
-haxball_gym.play_visual_games(red_agents=[red_agent], blue_agents=[])
+haxballgym.play_visual_games(red_agents=[red_agent], blue_agents=[])

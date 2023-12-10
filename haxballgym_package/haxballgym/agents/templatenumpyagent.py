@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from haxball_gym.game_simulator import playeraction
+from haxballgym.game_simulator import playeraction
 
 
 class TemplateAgent(ABC):

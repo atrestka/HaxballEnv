@@ -1,5 +1,5 @@
-from haxball_gym.game_simulator import playeraction
-from haxball_gym.config import config
+from haxballgym.game_simulator import playeraction
+from haxballgym.config import config
 from dataclasses import dataclass, field
 from typing import List
 import pickle

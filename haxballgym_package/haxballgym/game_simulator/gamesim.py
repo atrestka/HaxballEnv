@@ -1,6 +1,6 @@
-from haxball_gym.config import config
-from haxball_gym.game_simulator.gamesimengine import GameSimEngine
-from haxball_gym.game_log import log
+from haxballgym.config import config
+from haxballgym.game_simulator.gamesimengine import GameSimEngine
+from haxballgym.game_log import log
 
 
 class GameSim(GameSimEngine):
