@@ -79,6 +79,9 @@ class Configuration:
     TEXT_COLOUR = (0, 0, 0)
     TEXT_POSITION = (215, 25)
 
+    DEFAULT_RED_BINDINGS = ('w', 'd', 's', 'a', 'c')
+    DEFAULT_BLUE_BINDINGS = ('i', 'l', 'k', 'j', '.')
+
     ################################
     ###### GAME CALCULATIONS #######
     ################################
