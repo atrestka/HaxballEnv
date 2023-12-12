@@ -24,6 +24,9 @@ class HaxballGymEnvironment(Env):
                                                       range(config.NUM_BLUE_PLAYERS + config.NUM_RED_PLAYERS)])
         self.observation_space = get_observation_space()
 
+        # stores previous ball proximity
+        self.last_ballprox = 0.
+
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
         # That's desired so the state is in an easier to manipulate form.
@@ -31,18 +34,24 @@ class HaxballGymEnvironment(Env):
 
     def getActions(self, action_list):
         raise NotImplementedError
+    
+    def getStepReward(self):
+        raise NotImplementedError()
 
     def step(self, action_list):
-        
+
         self.steps_since_reset += 1
         actions = self.getActions(action_list)
 
         self.game_sim.giveCommands(actions)
 
-        ball_touched = False
+        ball_touched_red = False
+        ball_touched_blue = False
+
         for i in range(self.step_len):
             self.game_sim.step()
-            ball_touched = ball_touched or self.game_sim.was_ball_touched
+            ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
+            ball_touched_blue = ball_touched_blue or self.game_sim.was_ball_touched_blue
             goal = self.goalScored()
             # If a goal is scored return instantly
             if goal == 1:
@@ -52,16 +61,29 @@ class HaxballGymEnvironment(Env):
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
-            return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, True, {}]
+            result = [self.getState(),
+                      ball_touched_red * config.KICK_REWARD
+                      - (self.game_sim.getBallProximityScore("red") - self.last_ballprox)
+                      * config.BALL_PROXIMITY_REWARD,
+                      True,
+                      {}]
         else:
-            return [self.getState(), self.game_sim.was_ball_touched * config.BALL_PROXIMITY_REWARD, False, {}]
+            result = [self.getState(),
+                      ball_touched_red * config.KICK_REWARD
+                      - (self.game_sim.getBallProximityScore("red") - self.last_ballprox)
+                      * config.BALL_PROXIMITY_REWARD,
+                      False,
+                      {}]
+
+        self.last_ballprox = self.game_sim.getBallProximityScore("red")
+        return result
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it
         if self.display is None:
             self.display = basicdisplayer.GameWindow(config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
 
-        self.display.drawFrame(self.game_sim.log())
+        self.display.drawFrame(self.game_sim.log(), hold=1)
 
         # Support moving and closing the window
         self.display.getInput()

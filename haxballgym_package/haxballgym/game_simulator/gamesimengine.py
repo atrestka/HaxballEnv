@@ -62,7 +62,8 @@ class GameSimEngine():
         self.red_last_goal = False
         # Flag showing whether a point was scored in the current step
         self.was_point_scored = False
-        self.was_ball_touched = False
+        self.was_ball_touched_red = False
+        self.was_ball_touched_blue = False
 
         self.red_score = 0
         self.blue_score = 0
@@ -260,7 +261,12 @@ class GameSimEngine():
                     if player.current_action.isKicking() and player.can_kick:
                         self.makeEntityHitBall(player, ball)
                         player.can_kick = False
-                        self.was_ball_touched = True
+
+                        if player.team == "red":
+                            self.was_ball_touched_red = True
+
+                        if player.team == "blue":
+                            self.ball_was_touched_blue = True
             if not player.current_action.isKicking():
                 player.can_kick = True
 
@@ -320,3 +326,10 @@ class GameSimEngine():
             elif ball.pos[0] >= config.WINDOW_WIDTH - config.PITCH_CORNER_X:
                 countedGoals[0] += 1
         return countedGoals
+
+    def resetTrackers(self):
+        self.was_point_scored = False
+        # Resets trackers about the game at the start of an env step
+        self.was_ball_touched_blue = False
+        self.was_ball_touched_red = False
+

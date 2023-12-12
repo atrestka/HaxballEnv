@@ -20,7 +20,7 @@ class GameWindow:
         self.win = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("TEST DISPLAY")
 
-    def drawFrame(self, frame):
+    def drawFrame(self, frame, hold=0.):
         self.win.fill((0, 0, 0))
         # draws background
         pygame.draw.rect(self.win, config.BORDER_COLOUR, (0, 0, config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
@@ -117,6 +117,7 @@ class GameWindow:
 
         # Display
         self.clock.tick(self.fps)
+        self.clock.tick(hold)
         pygame.display.update()
 
     def getInput(self):

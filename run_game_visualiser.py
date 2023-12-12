@@ -1,5 +1,8 @@
 import argparse
 import haxballgym
+from haxball_baselines.agents.baseline_a2c_agent import A2CBaselineAgent
+from haxball_baselines.agents.baseline_ppo_agent import PPOBaselineAgent
+
 
 
 # Example command line code:
@@ -102,5 +105,11 @@ red_random = haxballgym.RandomAgent(10)
 blue_agent = haxballgym.HumanAgent(default_blue_bindings)
 blue_random = haxballgym.RandomAgent(10)
 idle_agent = haxballgym.IdleAgent()
+bot_agent = A2CBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/A2C_example.zip',
+                             15,
+                             haxballgym.SinglePlayerEnvironment())
+ppo_agent = A2CBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example.zip',
+                             15,
+                             haxballgym.SinglePlayerEnvironment())
 
-haxballgym.play_visual_games(red_agents=[red_agent], blue_agents=[])
+haxballgym.play_visual_games(red_agents=[ppo_agent], blue_agents=[], print_debug=True)

@@ -47,7 +47,7 @@ class Frame:
     frame: int = 0
 
     def posToNp(self, myTeam="red", me=0, normalise=True, pad_to_n_players=0, pad_to_n_balls=0):
-        
+
         if len(self.blues) > 0:
             example_player = self.blues[0]
         else:

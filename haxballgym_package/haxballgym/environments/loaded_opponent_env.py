@@ -6,7 +6,6 @@ class LoadedOpponentEnv(HaxballGymEnvironment):
     def __init__(self, opponent, step_len=15, max_steps=400, norming=True, rand_reset=True):
 
         self.opponent = opponent
-        print(opponent)
 
         HaxballGymEnvironment.__init__(self, step_len, max_steps, norming, rand_reset)
 

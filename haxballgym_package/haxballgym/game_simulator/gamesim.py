@@ -1,6 +1,7 @@
 from haxballgym.config import config
 from haxballgym.game_simulator.gamesimengine import GameSimEngine
 from haxballgym.game_log import log
+import numpy as np
 
 
 class GameSim(GameSimEngine):
@@ -80,9 +81,8 @@ class GameSim(GameSimEngine):
 
     def step(self):
         self.steps += 1
-        self.was_point_scored = False
+        self.resetTrackers()
         game_ended = False
-        self.was_ball_touched = False
 
         # Update positions
         self.updatePositions()
@@ -123,3 +123,22 @@ class GameSim(GameSimEngine):
                 if disp.rip:
                     disp.shutdown()
                     break
+
+    def cloneGameState(self, other_gamesim):
+        pass
+
+    def getBallProximityScore(self, team):
+        # gets the minimum distance from the players on a given team to a ball
+        if team == "red":
+            positions = [self.log().posToNp(myTeam="red", me=0)[2 * i: 2 * i + 2]
+                         for i in range(config.NUM_RED_PLAYERS)]
+            ball_positions = [b.posToList(myTeam="red", normalise=True)[0:2]
+                              for b in self.log().balls]
+        elif team == "blue":
+            positions = [self.log().posToNp(myTeam="blue", me=0)[4 * i: 4 * i + 2]
+                         for i in range(config.NUM_BLUE_PLAYERS)]
+            ball_positions = [b.posToList(myTeam="blue", normalise=True)[0:2]
+                              for b in self.log().balls]
+        score = np.min([np.linalg.norm(np.array(x).flatten() - np.array(y).flatten())
+                        for x in positions for y in ball_positions])
+        return score

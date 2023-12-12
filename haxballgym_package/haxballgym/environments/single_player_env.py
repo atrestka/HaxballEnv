@@ -5,7 +5,7 @@ from haxballgym.config import config
 
 class SinglePlayerEnvironment(HaxballGymEnvironment):
     def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
-        
+
         config.NUM_BLUE_PLAYERS = 0
         config.NUM_RED_PLAYERS = 1
         HaxballGymEnvironment.__init__(self, step_len, max_steps, norming, rand_reset)

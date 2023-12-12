@@ -1,8 +1,8 @@
 import numpy as np
-from haxball_gym.environments.single_player_env import SinglePlayerEnvironment
-from haxball_gym.environments.loaded_opponent_env import LoadedOpponentEnv
-from haxball_gym.agents.randomagent import RandomAgent
-from haxball_gym.config import config
+from haxballgym.environments.single_player_env import SinglePlayerEnvironment
+from haxballgym.environments.loaded_opponent_env import LoadedOpponentEnv
+from haxballgym.agents.randomagent import RandomAgent
+from haxballgym.config import config
 
 
 #######################################################

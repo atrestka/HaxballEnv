@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 from haxballgym.game_simulator import playeraction
+import numpy as np
 
 
 class TemplateAgent(ABC):
@@ -20,7 +21,5 @@ class TemplateAgent(ABC):
             numpy_frame = frame.posToNp(myTeam="red", me=0, normalise=True, pad_to_n_players=0, pad_to_n_balls=0)
             self.current_action = self.get_numpy_action(numpy_frame)
 
-        print(self.current_action)
-        self.current_action = self.current_action.astype(int)
-        print(self.current_action)
-        return [playeraction.Action(action) for action in self.current_action][0]
+        self.current_action = np.block(self.current_action).flatten().astype(int)
+        return [playeraction.Action(action) for action in self.current_action]
