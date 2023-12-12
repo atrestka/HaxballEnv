@@ -8,4 +8,5 @@ n_steps = 100
 
 for step in range(n_steps):
     env.render()
-    print(env.step(np.array([2])))
+    move = input("move")
+    print(env.step(np.array([move])))

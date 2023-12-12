@@ -52,8 +52,8 @@ class Configuration:
 
     # reward parameters
     WIN_REWARD = 100
-    BALL_PROXIMITY_REWARD = .1
-    KICK_REWARD = 1
+    BALL_PROXIMITY_REWARD = 10.
+    KICK_REWARD = 1.
 
     ################################
     ## PYGAME VISUALIZER SETTINGS ##

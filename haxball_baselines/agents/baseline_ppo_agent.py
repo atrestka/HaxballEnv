@@ -11,5 +11,5 @@ class PPOBaselineAgent(TemplateAgent):
         self.model = PPO.load(model, env=env)
 
     def get_numpy_action(self, state):
-        action, _states = self.model.predict(state, deterministic=False)
+        action, _states = self.model.predict(state, deterministic=True)
         return [action]

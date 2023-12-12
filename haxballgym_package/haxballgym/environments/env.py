@@ -35,7 +35,7 @@ class HaxballGymEnvironment(Env):
     def getActions(self, action_list):
         raise NotImplementedError
     
-    def getStepReward(self):
+    def getStepReward(self, scoring_player):
         raise NotImplementedError()
 
     def step(self, action_list):
@@ -54,26 +54,14 @@ class HaxballGymEnvironment(Env):
             ball_touched_blue = ball_touched_blue or self.game_sim.was_ball_touched_blue
             goal = self.goalScored()
             # If a goal is scored return instantly
-            if goal == 1:
-                return [self.getState(), 1.0 * config.WIN_REWARD, True, {}]
-            elif goal == -1:
-                return [self.getState(), -1.0 * config.WIN_REWARD, True, {}]
+            if goal != 0:
+                return [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
-            result = [self.getState(),
-                      ball_touched_red * config.KICK_REWARD
-                      - (self.game_sim.getBallProximityScore("red") - self.last_ballprox)
-                      * config.BALL_PROXIMITY_REWARD,
-                      True,
-                      {}]
+            result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
         else:
-            result = [self.getState(),
-                      ball_touched_red * config.KICK_REWARD
-                      - (self.game_sim.getBallProximityScore("red") - self.last_ballprox)
-                      * config.BALL_PROXIMITY_REWARD,
-                      False,
-                      {}]
+            result = [self.getState(), self.getStepReward(goal, ball_touched_red), False, {}]
 
         self.last_ballprox = self.game_sim.getBallProximityScore("red")
         return result

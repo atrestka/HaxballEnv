@@ -19,3 +19,19 @@ class SinglePlayerEnvironment(HaxballGymEnvironment):
 
         actions = [playeraction.Action(action) for action in action_list]
         return actions
+
+    def getStepReward(self, scoring_player, ball_touched_red):
+        if scoring_player == 1:
+            return 1.0 * config.WIN_REWARD
+        elif scoring_player == -1:
+            return -1.0 * config.WIN_REWARD
+
+        if self.steps_since_reset >= self.max_steps:
+            result = ball_touched_red * config.KICK_REWARD \
+                - (self.game_sim.getBallProximityScore("red") - self.last_ballprox) \
+                * config.BALL_PROXIMITY_REWARD
+        else:
+            result = ball_touched_red * config.KICK_REWARD \
+                - (self.game_sim.getBallProximityScore("red") - self.last_ballprox) \
+                * config.BALL_PROXIMITY_REWARD
+        return result
