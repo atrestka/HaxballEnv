@@ -2,7 +2,7 @@ import argparse
 import haxballgym
 from haxball_baselines.agents.baseline_a2c_agent import A2CBaselineAgent
 from haxball_baselines.agents.baseline_ppo_agent import PPOBaselineAgent
-
+from haxball_baselines.agents.baseline_DQN_agent import DQNBaselineAgent
 
 
 # Example command line code:
@@ -108,8 +108,11 @@ idle_agent = haxballgym.IdleAgent()
 bot_agent = A2CBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/A2C_example.zip',
                              15,
                              haxballgym.SinglePlayerEnvironment())
-ppo_agent = PPOBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example3.zip',
+ppo_agent = PPOBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_trained_goal_scorer.zip',
                              15,
                              haxballgym.SinglePlayerEnvironment())
+dqn_agent = DQNBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/DQN_example.zip',
+                             15,
+                             haxballgym.SinglePlayerEnvironment(use_discrete_actionspace=True))
 
-haxballgym.play_visual_games(red_agents=[ppo_agent], blue_agents=[], print_debug=True)
+haxballgym.play_visual_games(red_agents=[dqn_agent], blue_agents=[], print_debug=True)

@@ -1,0 +1,7 @@
+PPO_trained_goal_scorer
+
+trained with following parameters:
+("MlpPolicy", env, verbose=2, policy_kwargs={'net_arch': [256, 256, 256]}, gamma=0.8,
+            ent_coef=0.4, learning_rate=0.003)
+
+remember to set use_discrete_actionspace to False when initializing environment

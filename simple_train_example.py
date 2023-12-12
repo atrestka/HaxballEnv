@@ -1,14 +1,13 @@
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN
 from haxballgym import SinglePlayerEnvironment
 from stable_baselines3.common.base_class import BaseAlgorithm
 import numpy as np
 import gymnasium as gym
 
-env = SinglePlayerEnvironment(max_steps=50)
+env = SinglePlayerEnvironment(max_steps=50, use_discrete_actionspace=True)
 # env = gym.make("CartPole")
 
-model = PPO("MlpPolicy", env, verbose=2, policy_kwargs={'net_arch': [256, 256, 256]}, gamma=0.8,
-            ent_coef=0.4, learning_rate=0.003)
+model = DQN("MlpPolicy", env, verbose=2, policy_kwargs={'net_arch': [256, 256, 256]}, gamma=0.8, learning_rate=0.003)
 
 
 def evaluate(
@@ -54,7 +53,7 @@ def evaluate(
 
 print(evaluate(model, 100))
 
-model.learn(total_timesteps=1000000, log_interval=2, progress_bar=True)
-model.save("haxball_baselines/models/PPO_example3")
+model.learn(total_timesteps=100000, log_interval=2, progress_bar=True)
+model.save("haxball_baselines/models/DQN_example")
 
 print(evaluate(model, 100))

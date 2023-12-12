@@ -1,14 +1,19 @@
 from haxballgym.environments.env import HaxballGymEnvironment
 from haxballgym.game_simulator import playeraction
 from haxballgym.config import config
+import gym
 
 
 class SinglePlayerEnvironment(HaxballGymEnvironment):
-    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
+    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=False):
 
         config.NUM_BLUE_PLAYERS = 0
         config.NUM_RED_PLAYERS = 1
         HaxballGymEnvironment.__init__(self, step_len, max_steps, norming, rand_reset)
+
+        self.use_discrete_actionspace = use_discrete_actionspace
+        if use_discrete_actionspace:
+            self.action_space = gym.spaces.Discrete(18)
 
     def getActions(self, action_list):
         if action_list is not list:
@@ -16,6 +21,9 @@ class SinglePlayerEnvironment(HaxballGymEnvironment):
         # advances the simulator by step_len number of steps. Returns a list of
         # [observation (object), reward (float), done (bool), info (dict)]
         # Actions must be integeres in the range [0, 18)
+
+        if self.use_discrete_actionspace:
+            return [playeraction.Action(action_list)]
 
         actions = [playeraction.Action(action) for action in action_list]
         return actions
