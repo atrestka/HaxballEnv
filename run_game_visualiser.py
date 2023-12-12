@@ -108,7 +108,7 @@ idle_agent = haxballgym.IdleAgent()
 bot_agent = A2CBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/A2C_example.zip',
                              15,
                              haxballgym.SinglePlayerEnvironment())
-ppo_agent = PPOBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example2.zip',
+ppo_agent = PPOBaselineAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example3.zip',
                              15,
                              haxballgym.SinglePlayerEnvironment())
 

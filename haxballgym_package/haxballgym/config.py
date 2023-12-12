@@ -51,8 +51,8 @@ class Configuration:
     KICKING_CIRCLE_THICKNESS = 2
 
     # reward parameters
-    WIN_REWARD = 100
-    BALL_PROXIMITY_REWARD = 10.
+    WIN_REWARD = 1000.
+    BALL_PROXIMITY_REWARD = 1.
     KICK_REWARD = 1.
 
     ################################
