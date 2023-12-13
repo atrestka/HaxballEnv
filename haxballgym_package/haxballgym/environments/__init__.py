@@ -1,0 +1,1 @@
+from haxballgym.environments.single_player_env import SinglePlayerEnvironment

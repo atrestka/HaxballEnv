@@ -8,3 +8,10 @@ from haxballgym.agents.randomagent import RandomAgent
 from haxballgym.agents.templatenumpyagent import TemplateAgent
 from haxballgym.pygame_player import play_visual_games
 from haxballgym.arena import play_arena_games
+from gym.envs.registration import register
+
+register(
+    id='HaxballSinglePlayer-v0',
+    entry_point='haxballgym.environments.single_player_env:SinglePlayerEnvironment',
+    max_episode_steps=300,
+)
