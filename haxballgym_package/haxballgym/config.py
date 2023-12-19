@@ -10,7 +10,7 @@ class Configuration:
     ################################
 
     # player and ball parameters
-    TEAM_NUMBERS = [1]
+    TEAM_NUMBERS = [1]  # [red (left), blue (right), yellow (top), green (bottom)]
     NUM_BALLS = 1
 
     # field size parameters

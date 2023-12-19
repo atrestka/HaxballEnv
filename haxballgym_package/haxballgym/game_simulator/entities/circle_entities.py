@@ -1,4 +1,4 @@
-from config import config
+from haxballgym.config import config
 from haxballgym.game_simulator import playeraction
 from haxballgym.game_log import log
 

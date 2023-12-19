@@ -10,7 +10,7 @@ def get_env():
 
 
 def get_2p_env():
-    env = haxballgym.LoadedOpponentEnv(use_discrete_actionspace=True)
+    env = haxballgym.LoadedOpponentEnv1v1(use_discrete_actionspace=True)
     return env
 
 

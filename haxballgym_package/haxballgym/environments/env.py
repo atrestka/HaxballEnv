@@ -1,7 +1,7 @@
 from gym import Env
 import gym
 from haxballgym.game_displayer import basicdisplayer
-from config import config
+from haxballgym.config import config
 
 import numpy as np
 
@@ -81,11 +81,11 @@ class HaxballGymEnvironmentTemplate(Env):
         # Checks goals. Returns 1 for red, 0 for none, -1 for blue.
         goals = self.game_sim.checkGoals()
         if goals[0] > 0:
-            return 1
-        elif goals[1] > 0:
             return -1
-        else:
+        elif sum(goals) == 0:
             return 0
+        else:
+            return 1
 
 
 def get_observation_space():

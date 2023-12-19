@@ -67,10 +67,8 @@ class Frame:
     rectangles: List[RectangleState]
     frame: int = 0
 
-    def posToNp(self, flip_dir=0, pad_to_n_players=0, pad_to_n_balls=0, my_team=None):
-
+    def posToNp(self, flip_dir=0, pad_to_n_players=0, pad_to_n_balls=0, my_team=None, normalise=True):
         example_player = self.players[0]
-        normalise = True
 
         if my_team is None:
             return np.array(

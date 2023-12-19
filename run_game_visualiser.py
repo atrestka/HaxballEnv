@@ -13,7 +13,7 @@ red_random = haxballgym.RandomAgent(10)
 # agent which does nothing
 idle_agent = haxballgym.IdleAgent()
 
-"""
+
 # PPO-trained agent
 ppo_agent = PPOBaselineAgent(
     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example_single_player.zip',
@@ -21,6 +21,11 @@ ppo_agent = PPOBaselineAgent(
     haxballgym.SinglePlayerEnvironment()
 )
 
+# play visual games
+haxballgym.play_visual_games_2team(red_agents=[ppo_agent], blue_agents=[], print_debug=True)
+
+
+"""
 # DQN-trained agent
 dqn_agent = DQNBaselineAgent(
     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/DQN_example_single_player.zip',
@@ -30,20 +35,21 @@ dqn_agent = DQNBaselineAgent(
 )
 """
 
+"""
 # A3C agent
 A3C_agent_red = ActorCriticAgent(
-    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/1140.5663781166077',
+    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/2863.8579771518707',
     15,
     get_2p_env(),
-    team="red"
+    team=0
 )
 A3C_agent_blue = ActorCriticAgent(
-    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/1763.4958679676056',
+    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/2863.8579771518707',
     15,
     get_2p_env(),
-    team="blue"
+    team=1
 )
 
-
 # play visual games
-haxballgym.play_visual_games(red_agents=[A3C_agent_red], blue_agents=[A3C_agent_blue], print_debug=True)
+haxballgym.play_visual_games_2team(red_agents=[A3C_agent_red], blue_agents=[A3C_agent_blue], print_debug=True)
+"""

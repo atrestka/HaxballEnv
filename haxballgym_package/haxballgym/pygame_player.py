@@ -9,16 +9,11 @@ from haxballgym.game_log import log
 def game_visualizer(
         gamesim,
         agents,
-        print_debug=None,
-        auto_score=True,
-        rand_reset=True,
-        max_steps=2147483648,
         max_games=2147483648,
         save_dir=None,
         save_master_dir='',
         save_step_length=1,
         suppress_display=False,
-        suppress_scorekeeping=False,
         step_length=1
 ):
 
@@ -130,16 +125,11 @@ def play_visual_games_2team(
     game_visualizer(
         game,
         agents,
-        print_debug,
-        auto_score,
-        rand_reset,
-        max_steps,
         max_games,
         save_dir,
         save_master_dir,
         save_step_length,
         suppress_display,
-        suppress_scorekeeping,
         step_length
     )
 
@@ -177,15 +167,10 @@ def play_visual_games_4team(
     game_visualizer(
         game,
         agents,
-        print_debug,
-        auto_score,
-        rand_reset,
-        max_steps,
         max_games,
         save_dir,
         save_master_dir,
         save_step_length,
         suppress_display,
-        suppress_scorekeeping,
         step_length
     )
