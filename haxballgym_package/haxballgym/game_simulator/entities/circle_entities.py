@@ -1,18 +1,19 @@
-from haxballgym.config import config
+from config import config
 from haxballgym.game_simulator import playeraction
 from haxballgym.game_log import log
 
 import numpy as np
 
 
-# Base class for any entity, stores position, velocity, acceleration.
-class Entity:
+# Base class for any CircleCircleEntity, stores position, velocity, acceleration.
+class CircleEntity:
     def __init__(self, initial_position, initial_velocity, initial_acceleration, radius, bouncingquotient):
         self.pos = np.array(initial_position)
         self.vel = np.array(initial_velocity)
 
         self.radius = radius
         self.bouncingquotient = bouncingquotient
+        self.is_circle = True
 
     # Get the Euclidian distance from self to obj
     def getDistanceTo(self, obj):
@@ -23,11 +24,11 @@ class Entity:
         return (obj.pos - self.pos) / self.getDistanceTo(obj)
 
 
-class Player(Entity):
+class Player(CircleEntity):
     def __init__(self, team, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
-                        config.PLAYER_RADIUS, config.PLAYER_BOUNCING)
+        CircleEntity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                              config.PLAYER_RADIUS, config.PLAYER_BOUNCING)
 
         # Set the not random reset position
         self.default_position = initial_position
@@ -71,21 +72,21 @@ class Player(Entity):
         self.current_action = playeraction.Action()
 
     def log(self):
-        return log.PlayerState(*self.pos, *self.vel, self.current_action)
+        return log.PlayerState(*self.pos, *self.vel, self.current_action, team=self.team)
 
 
-class Ball(Entity):
+class Ball(CircleEntity):
     def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
-                        config.BALL_RADIUS, config.BALL_BOUNCING)
+        CircleEntity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                              config.BALL_RADIUS, config.BALL_BOUNCING)
 
         # ball properties
         self.mass = 1 / config.BALL_INV_MASS
         self.inv_mass = config.BALL_INV_MASS
 
     def updatePosition(self):
-        # Updates the position of the entity. Doesn't include any step duration for
+        # Updates the position of the CircleEntity. Doesn't include any step duration for
         # whatever reason. God help us all
         self.vel *= config.BALL_DAMPING
         self.pos += self.vel
@@ -105,15 +106,19 @@ class Ball(Entity):
         return log.BallState(self.pos[0], self.pos[1], self.vel[0], self.vel[1])
 
 
-class GoalPost(Entity):
-    def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
+class GoalPost(CircleEntity):
+    def __init__(self, initial_position, team, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
-                        config.GOALPOST_RADIUS, config.GOALPOST_BOUNCING_QUOTIENT)
+        CircleEntity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                              config.GOALPOST_RADIUS, config.GOALPOST_BOUNCING_QUOTIENT)
+        self.team = team
+
+    def log(self):
+        return log.GoalpostState(self.pos[0], self.pos[1], self.team)
 
 
-class CentreCircleBlock(Entity):
+class CentreCircleBlock(CircleEntity):
     def __init__(self, initial_position, initial_velocity=np.zeros(2), initial_acceleration=np.zeros(2)):
         # Initialise positional parameters, basic properties of the object
-        Entity.__init__(self, initial_position, initial_velocity, initial_acceleration,
-                        config.CENTRE_CIRCLE_RADIUS, 0)
+        CircleEntity.__init__(self, initial_position, initial_velocity, initial_acceleration,
+                              config.CENTRE_CIRCLE_RADIUS, 0)

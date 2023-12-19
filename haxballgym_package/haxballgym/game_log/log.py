@@ -13,13 +13,15 @@ class BallState:
     vx: float
     vy: float
 
-    def posToList(self, myTeam, normalise=True):
-        if myTeam == "red":
+    def posToList(self, rotation=0, normalise=True):
+        if rotation == 0:
             l = [self.x, self.y, self.vx, self.vy]
-        elif myTeam == "blue":
+        elif rotation == 1:
+            l = [config.WINDOW_HEIGHT - self.y, self.x, -self.vy, self.vx]
+        elif rotation == 2:
             l = [config.WINDOW_WIDTH - self.x, config.WINDOW_HEIGHT - self.y, -self.vx, -self.vy]
-        else:
-            raise ValueError
+        elif rotation == 3:
+            l = [self.y, config.WINDOW_WIDTH - self.x, self.vy, -self.vx]
         if normalise:
             v_max = config.ACCELARATION * config.PLAYER_DAMPING / (1 - config.PLAYER_DAMPING)
             l = [l[0] / config.WINDOW_WIDTH, l[1] / config.WINDOW_HEIGHT, l[2] / v_max, l[3] / v_max]
@@ -27,70 +29,63 @@ class BallState:
 
 
 @dataclass
+class GoalpostState:
+    x: float
+    y: float
+    team: int
+
+
+@dataclass
+class RectangleState:
+    x: float
+    y: float
+    width: float
+    height: float
+
+
+@dataclass
 class PlayerState(BallState):
     action: playeraction.Action
+    team: int
 
-    def actToList(self, myTeam):
-        if myTeam == "red":
+    def actToList(self, flip=0):
+        if flip == 0:
             return self.action.singleAction()
-        elif myTeam == "blue":
+        elif flip == 1:
+            return self.action.rotated_90().singleAction()
+        elif flip == 2:
             return self.action.flipped().singleAction()
-        else:
-            raise ValueError
+        elif flip == 3:
+            return self.action.rotated_270().singleAction()
 
 
 @dataclass
 class Frame:
-    blues: List[PlayerState]
-    reds: List[PlayerState]
+    players: List[PlayerState]
     balls: List[BallState]
+    goalposts: List[GoalpostState]
+    rectangles: List[RectangleState]
     frame: int = 0
 
-    def posToNp(self, myTeam="red", me=0, normalise=True, pad_to_n_players=0, pad_to_n_balls=0):
+    def posToNp(self, flip_dir=0, pad_to_n_players=0, pad_to_n_balls=0, my_team=None):
 
-        if len(self.blues) > 0:
-            example_player = self.blues[0]
-        else:
-            example_player = self.reds[0]
+        example_player = self.players[0]
+        normalise = True
 
-        if myTeam == "blue":
+        if my_team is None:
             return np.array(
-                self.blues[me].posToList(myTeam, normalise)
-                + [x for p in self.blues[me + 1:] for x in p.posToList(myTeam, normalise)]
-                + [x for p in self.blues[:me] for x in p.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
-                + [x for p in self.reds for x in p.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_players - len(self.reds)))]
-                + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
-            )
-        elif myTeam == "red":
-            return np.array(
-                self.reds[me].posToList(myTeam, normalise)
-                + [x for p in self.reds[:me] for x in p.posToList(myTeam, normalise)]
-                + [x for p in self.reds[me + 1:] for x in p.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
-                + [x for p in self.blues for x in p.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_players - len(self.blues)))]
-                + [x for b in self.balls for x in b.posToList(myTeam, normalise)]
-                + [x * 0 for x in example_player.posToList(myTeam, normalise)
-                   for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
+                [x for p in self.players for x in p.posToList(flip_dir, normalise)]
+                + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                    for _ in range(max(0, pad_to_n_players - len(self.players)))]
+                + [x for b in self.balls for x in b.posToList(flip_dir, normalise)]
+                + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                    for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
             )
         else:
-            raise ValueError
+            raise ValueError("I have not implemented this yet :(")
 
-    def singleActToNp(self, myTeam, me):
-        if myTeam == "blue":
-            return np.array(self.blues[me].actToList(myTeam))
-        elif myTeam == "red":
-            return np.array(self.reds[me].actToList(myTeam))
-        else:
-            raise ValueError
+    def singleActToNp(self, me, flip=0):
+        return np.array(self.players[me].actToList(flip))
 
 
 @dataclass

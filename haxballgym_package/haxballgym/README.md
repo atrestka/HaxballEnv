@@ -1,0 +1,1 @@
+A python-based engine for creating Haxball-like engines for training AI in various situations.

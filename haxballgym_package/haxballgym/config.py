@@ -10,8 +10,7 @@ class Configuration:
     ################################
 
     # player and ball parameters
-    NUM_RED_PLAYERS = 1
-    NUM_BLUE_PLAYERS = 1
+    TEAM_NUMBERS = [1]
     NUM_BALLS = 1
 
     # field size parameters
@@ -39,10 +38,11 @@ class Configuration:
     BALL_INV_MASS = 1
     BALL_BOUNCING = 0.5
 
+    # start position parameters (for when no random start)
+    PLAYER_START_POSITIONS = []
+    BALL_START_POSITIONS = []
+
     # parameters for the pitch drawing
-    RED_START_POSITION = (200, 200)
-    BLUE_START_POSITION = (640, 200)
-    BALL_START_POSITION = (420, 200)
     GOALPOST_RADIUS = 8
     GOALPOST_BOUNCING_QUOTIENT = 0.5
     GOALPOST_BORDER_THICKNESS = 2
@@ -60,11 +60,11 @@ class Configuration:
     ################################
 
     # defines colors used in drawing the map
-    RED_COLOUR = (229, 110, 86)
-    BLUE_COLOUR = (86, 137, 229)
-    BALL_COLOUR = (0, 0, 0)
-    GOAL_LINE_COLOUR = (199, 230, 189)
+    TEAM_COLOURS = [(229, 110, 86), (86, 137, 229), (229, 229, 10), (0, 200, 0)]
     GOALPOST_COLOUR = (150, 150, 150)
+    BALL_COLOUR = (0, 0, 0)
+    WALL_COLOUR = (50, 50, 50)
+    GOAL_LINE_COLOUR = (199, 230, 189)
     PITCH_COLOUR = (127, 162, 112)
     BORDER_COLOUR = (113, 140, 90)
     KICKING_CIRCLE_COLOUR = (255, 255, 255)
@@ -90,11 +90,6 @@ class Configuration:
     PITCH_CORNER_X = int(np.floor((WINDOW_WIDTH - PITCH_WIDTH) / 2))
     PITCH_CORNER_Y = int(np.floor((WINDOW_HEIGHT - PITCH_HEIGHT) / 2))
     GOAL_CORNER_Y = int(np.floor((WINDOW_HEIGHT - GOAL_SIZE) / 2))
-    RED_GOALPOST_UP = (PITCH_CORNER_X, GOAL_CORNER_Y)
-    RED_GOALPOST_DOWN = (PITCH_CORNER_X, GOAL_CORNER_Y + GOAL_SIZE)
-    BLUE_GOALPOST_UP = (WINDOW_WIDTH - PITCH_CORNER_X, GOAL_CORNER_Y)
-    BLUE_GOALPOST_DOWN = (WINDOW_WIDTH - PITCH_CORNER_X, GOAL_CORNER_Y + GOAL_SIZE)
-    GOALPOSTS = [RED_GOALPOST_UP, RED_GOALPOST_DOWN, BLUE_GOALPOST_UP, BLUE_GOALPOST_DOWN]
 
     # I have no idea what this is
     y1 = PITCH_CORNER_X - 30
@@ -117,7 +112,8 @@ class Configuration:
     GOAL_Y = [GOAL_CORNER_Y, GOAL_CORNER_Y + GOAL_SIZE]
 
     # number of things in the game
-    NUM_ENTITIES = NUM_RED_PLAYERS + NUM_BLUE_PLAYERS + NUM_BALLS
+    NUM_ENTITIES = sum(TEAM_NUMBERS) + NUM_BALLS
+    NUM_PLAYERS = sum(TEAM_NUMBERS)
 
 
 # define the config

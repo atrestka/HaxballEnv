@@ -1,6 +1,6 @@
 import pygame
 from pygame import gfxdraw
-from haxballgym.config import config
+from config import config
 
 
 class GameWindow:
@@ -65,21 +65,13 @@ class GameWindow:
             )
         )
 
-        cnt = 0
-        # draws GOALPOSTS
-        for goalpost in config.GOALPOSTS:
-            cnt += 1
-            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS, (0, 0, 0))
-            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1], config.GOALPOST_RADIUS, (0, 0, 0))
-            goalpostcol = (0, 0, 0)
-            if cnt <= 2:
-                goalpostcol = (200, 150, 150)
-            else:
-                goalpostcol = (150, 150, 200)
-            gfxdraw.filled_circle(self.win, goalpost[0], goalpost[1],
-                                  config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, goalpostcol)
-            gfxdraw.aacircle(self.win, goalpost[0], goalpost[1],
-                             config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, goalpostcol)
+        def drawGoalpost(goalpost, colour):
+            gfxdraw.filled_circle(self.win, goalpost.x, goalpost.y, config.GOALPOST_RADIUS, (0, 0, 0))
+            gfxdraw.aacircle(self.win, goalpost.x, goalpost.y, config.GOALPOST_RADIUS, (0, 0, 0))
+            gfxdraw.filled_circle(self.win, goalpost.x, goalpost.y,
+                                  config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, colour)
+            gfxdraw.aacircle(self.win, goalpost.x, goalpost.y,
+                             config.GOALPOST_RADIUS - config.GOALPOST_BORDER_THICKNESS, colour)
 
         def drawPlayer(p, colour):
             if p.action.isKicking():
@@ -98,10 +90,24 @@ class GameWindow:
             gfxdraw.aacircle(self.win, int(p.x), int(p.y),
                              config.PLAYER_RADIUS - config.KICKING_CIRCLE_THICKNESS, colour)
 
-        for p in frame.reds:
-            drawPlayer(p, config.RED_COLOUR)
-        for p in frame.blues:
-            drawPlayer(p, config.BLUE_COLOUR)
+        def drawBox(b, colour):
+            rect_outer = pygame.Rect(b.x,
+                                     b.y,
+                                     b.width,
+                                     b.height)
+            rect = pygame.Rect(b.x + config.GOALPOST_BORDER_THICKNESS,
+                               b.y + config.GOALPOST_BORDER_THICKNESS,
+                               b.width - 2 * config.GOALPOST_BORDER_THICKNESS,
+                               b.height - 2 * config.GOALPOST_BORDER_THICKNESS)
+            gfxdraw.box(self.win, rect_outer, (0, 0, 0))
+            gfxdraw.box(self.win, rect, colour)
+
+        for p in frame.players:
+            drawPlayer(p, config.TEAM_COLOURS[p.team])
+        for g in frame.goalposts:
+            drawGoalpost(g, average_tuples(config.GOALPOST_COLOUR, config.TEAM_COLOURS[g.team]))
+        for b in frame.rectangles:
+            drawBox(b, config.WALL_COLOUR)
 
         for b in frame.balls:
             gfxdraw.filled_circle(self.win, int(b.x), int(b.y), config.BALL_RADIUS + 2, (0, 0, 0))
@@ -156,3 +162,7 @@ class GameWindow:
 
     def shutdown(self):
         pygame.quit()
+
+
+def average_tuples(t1, t2):
+    return ((t1[0] + t2[0]) // 2, (t1[1] + t2[1]) // 2, (t1[2] + t2[2]) // 2)

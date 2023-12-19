@@ -1,15 +1,25 @@
-from haxballgym.environments.env import HaxballGymEnvironment
+from haxballgym.environments.env import HaxballGymEnvironmentTemplate
+from haxballgym.game_simulator.haxball import TwoTeamHaxballGamesim
 from haxballgym.game_simulator import playeraction
 from haxballgym.config import config
 import gym
 
 
-class SinglePlayerEnvironment(HaxballGymEnvironment):
+class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
     def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=False):
 
-        config.NUM_BLUE_PLAYERS = 0
-        config.NUM_RED_PLAYERS = 1
-        HaxballGymEnvironment.__init__(self, step_len, max_steps, norming, rand_reset)
+        config.TEAM_NUMBERS = [1, 0]
+
+        gamesim = TwoTeamHaxballGamesim(
+            1,
+            0,
+            1,
+            auto_score=True,
+            rand_reset=rand_reset,
+            max_steps=max_steps,
+        )
+
+        HaxballGymEnvironmentTemplate.__init__(self, gamesim, step_len, max_steps, norming)
 
         self.use_discrete_actionspace = use_discrete_actionspace
         if use_discrete_actionspace:
@@ -36,10 +46,10 @@ class SinglePlayerEnvironment(HaxballGymEnvironment):
 
         if self.steps_since_reset >= self.max_steps:
             result = ball_touched_red * config.KICK_REWARD \
-                - (self.game_sim.getBallProximityScore("red") - self.last_ballprox) \
+                - (self.game_sim.getBallProximityScore(0) - self.last_ballprox) \
                 * config.BALL_PROXIMITY_REWARD
         else:
             result = ball_touched_red * config.KICK_REWARD \
-                - (self.game_sim.getBallProximityScore("red") - self.last_ballprox) \
+                - (self.game_sim.getBallProximityScore(0) - self.last_ballprox) \
                 * config.BALL_PROXIMITY_REWARD
         return result

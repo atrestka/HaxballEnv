@@ -1,40 +1,36 @@
 from gym import Env
 import gym
-from haxballgym.game_simulator import gamesim
 from haxballgym.game_displayer import basicdisplayer
-from haxballgym.config import config
+from config import config
 
 import numpy as np
 
 
-class HaxballGymEnvironment(Env):
-    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True):
+class HaxballGymEnvironmentTemplate(Env):
+    def __init__(self, game_sim, step_len=15, max_steps=400, norming=True):
         self.step_len = step_len
         self.max_steps = max_steps
         self.norming = norming
 
-        self.game_sim = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS, config.NUM_BALLS,
-                                        rand_reset=rand_reset)
+        self.game_sim = game_sim
         self.game_sim.resetMap()
         self.steps_since_reset = 0
         self.display = None
+        self.last_ballprox = 0
 
         # define gym spaces
         self.action_space = gym.spaces.MultiDiscrete([18 for _ in
-                                                      range(config.NUM_BLUE_PLAYERS + config.NUM_RED_PLAYERS)])
+                                                      range(config.NUM_PLAYERS)])
         self.observation_space = get_observation_space()
-
-        # stores previous ball proximity
-        self.last_ballprox = 0.
 
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
         # That's desired so the state is in an easier to manipulate form.
-        return np.array(self.game_sim.log().posToNp("red", 0, self.norming))
+        return np.array(self.game_sim.log().posToNp(0, self.norming))
 
     def getActions(self, action_list):
         raise NotImplementedError
-    
+
     def getStepReward(self, scoring_player, ball_touched_red):
         raise NotImplementedError()
 
@@ -44,15 +40,12 @@ class HaxballGymEnvironment(Env):
         actions = self.getActions(action_list)
 
         self.game_sim.giveCommands(actions)
-
         ball_touched_red = False
-        ball_touched_blue = False
 
         for i in range(self.step_len):
             self.game_sim.step()
-            ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
-            ball_touched_blue = ball_touched_blue or self.game_sim.was_ball_touched_blue
             goal = self.goalScored()
+            ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
             # If a goal is scored return instantly
             if goal != 0:
                 return [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
@@ -63,7 +56,8 @@ class HaxballGymEnvironment(Env):
         else:
             result = [self.getState(), self.getStepReward(goal, ball_touched_red), False, {}]
 
-        self.last_ballprox = self.game_sim.getBallProximityScore("red")
+        self.last_ballprox = self.game_sim.getBallProximityScore(0)
+
         return result
 
     def render(self, mode='human'):

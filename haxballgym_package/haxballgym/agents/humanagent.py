@@ -23,7 +23,6 @@ class HumanAgent():
         else:
             raise ValueError("you must specify either keybindings or team")
 
-
         # gui gives the human commands (the pygame gui)
         self.gui = gui
 

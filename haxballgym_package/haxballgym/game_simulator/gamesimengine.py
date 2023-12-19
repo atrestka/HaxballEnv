@@ -1,72 +1,28 @@
-from haxballgym.game_simulator import entities
 from haxballgym.config import config
 
 import numpy as np
 
 
 class GameSimEngine():
-    def __init__(self, red_player_count, blue_player_count, ball_count,
-                 enforce_kickoff=False, seed=-1, rand_reset=True):
+    def __init__(self, players, balls, goals, walls, seed=-1):
         # Intialise the entities
-        if rand_reset:
-            self.reds = [entities.Player("red", self.getRandomPositionInThePlayingField())
-                         for i in range(red_player_count)]
-            self.blues = [entities.Player("blue", self.getRandomPositionInThePlayingField())
-                          for i in range(blue_player_count)]
-            self.balls = [entities.Ball(self.getRandomPositionInThePitch()) for i in range(ball_count)]
-        else:
-            red_def_pos = (config.WINDOW_WIDTH / 3, config.WINDOW_HEIGHT / 2)
-            blue_def_pos = (config.WINDOW_WIDTH * 2 / 3, config.WINDOW_HEIGHT / 2)
-            ball_def_pos = (config.WINDOW_WIDTH / 2, config.WINDOW_HEIGHT / 2)
+        self.players = players
+        self.balls = balls
+        self.goals = goals
+        self.walls = walls
 
-            red_start_positions = [red_def_pos for _ in range(red_player_count)]
-            for i in range(red_player_count):
-                red_start_positions[i] = (red_start_positions[i][0],
-                                          red_start_positions[i][1] - config.PLAYER_RADIUS * 5
-                                          * (red_player_count // 2) 
-                                          + i * config.PLAYER_RADIUS * 5)
-
-            blue_start_positions = [blue_def_pos for _ in range(blue_player_count)]
-            for i in range(blue_player_count):
-                blue_start_positions[i] = (blue_start_positions[i][0],
-                                           blue_start_positions[i][1] - config.PLAYER_RADIUS * 5
-                                           * (blue_player_count // 2) 
-                                           + i * config.PLAYER_RADIUS * 5)
-
-            self.reds = [entities.Player("red", red_start_positions[i]) for i in range(red_player_count)]
-            self.blues = [entities.Player("blue", blue_start_positions[i]) for i in range(blue_player_count)]
-
-            ball_start_positions = [ball_def_pos for _ in range(ball_count)]
-            for i in range(ball_count):
-                ball_start_positions[i] = (ball_start_positions[i][0],
-                                           ball_start_positions[i][1] - config.BALL_RADIUS * 5 * (ball_count // 2) 
-                                           + i * config.BALL_RADIUS * 5)
-
-            self.balls = [entities.Ball(ball_start_positions[i]) for i in range(ball_count)]
-        self.goalposts = [
-            entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y))),
-            entities.GoalPost(np.array((config.PITCH_CORNER_X, config.GOAL_CORNER_Y + config.GOAL_SIZE))),
-            entities.GoalPost(np.array((config.WINDOW_WIDTH - config.PITCH_CORNER_X, config.GOAL_CORNER_Y))),
-            entities.GoalPost(np.array((config.WINDOW_WIDTH - config.PITCH_CORNER_X,
-                                        config.GOAL_CORNER_Y + config.GOAL_SIZE)))
-        ]
-        self.centre_block = entities.CentreCircleBlock(np.array(config.BALL_START_POSITION))
+        self.goals_left = [g for g in self.goals if g.side == "left"]
+        self.goals_right = [g for g in self.goals if g.side == "right"]
+        self.goals_top = [g for g in self.goals if g.side == "top"]
+        self.goals_bottom = [g for g in self.goals if g.side == "bottom"]
 
         # Create useful groupings
-        self.players = self.reds + self.blues
         self.moving_objects = self.players + self.balls
 
+        self.num_teams = len(np.unique([p.team for p in self.players] + [g.team for g in self.goals]))
+
         # Game state info
-        self.has_the_game_been_kicked_off = True
-
-        self.red_last_goal = False
-        # Flag showing whether a point was scored in the current step
-        self.was_point_scored = False
-        self.was_ball_touched_red = False
-        self.was_ball_touched_blue = False
-
-        self.red_score = 0
-        self.blue_score = 0
+        self.team_scores = [0 for _ in range(self.num_teams)]
 
         # Number of elapsed frames
         self.steps = 0
@@ -75,9 +31,8 @@ class GameSimEngine():
         if seed != -1:
             np.random.seed(seed)
 
-        # Sets extra information to do with. Probably a convention that I am
-        # not following here.
-        self.enforce_kickoff = enforce_kickoff
+        # goalposts
+        self.goalposts = sum([goal.goalposts for goal in self.goals], [])
 
     def getRandomPositionInThePlayingField(self):
         return np.array([np.random.random_sample() * 840, np.random.random_sample() * 400]).astype(float)
@@ -86,23 +41,29 @@ class GameSimEngine():
         return np.array([config.PITCH_CORNER_X + np.random.random_sample() * 580,
                          config.PITCH_CORNER_Y + np.random.random_sample() * 200]).astype(float)
 
-    def keepOutOfCentre(self, obj):
-        # Moves an object out of the centre area. Called during kickoff
-        vector = np.array([self.centre_block.pos[0] - obj.pos[0], self.centre_block.pos[1] - obj.pos[1]])
-        distance = np.linalg.norm(vector)
-        # I'm a bit confused as to what's happening here. First you move obj to not collide with
-        # centreblock but then you also resolve the collision? Why? There is no collision happening...
-        if distance <= self.centre_block.radius + obj.radius:
-            obj.pos[0] = self.centre_block.pos[0] - vector[0] / np.linalg.norm(vector)
-            obj.pos[1] = self.centre_block.pos[1] - vector[1] / np.linalg.norm(vector)
-            self.resolveCollision(self.centre_block, obj, 1)
-            self.centre_block.pos[0] = int(self.centre_block.pos[0])  # Idk why this even exists
-            self.centre_block.pos[1] = int(self.centre_block.pos[1])
+    def bounceInPitch(self, obj, movement_space_x, movement_space_y):
+
+        if obj.pos[0] <= movement_space_x[0]:
+            obj.vel[0] = - 0.5 * obj.vel[0]
+            obj.pos[0] = movement_space_x[0] + (movement_space_x[0] - obj.pos[0]) / 2
+
+        if obj.pos[0] >= movement_space_x[1]:
+            obj.vel[0] = - 0.5 * obj.vel[0]
+            obj.pos[0] = movement_space_x[1] + (movement_space_x[1] - obj.pos[0]) / 2
+
+        if obj.pos[1] <= movement_space_y[0]:
+            obj.vel[1] = - 0.5 * obj.vel[1]
+            obj.pos[1] = movement_space_y[0] + (movement_space_y[0] - obj.pos[1]) / 2
+
+        if obj.pos[1] >= movement_space_y[1]:
+            obj.vel[1] = - 0.5 * obj.vel[1]
+            obj.pos[1] = movement_space_y[1] + (movement_space_y[1] - obj.pos[1]) / 2
 
     def keepEntityInMovementSpace(self, obj, is_ball=0):
         # should keep things on the board where the movement happens
 
         if not is_ball:
+
             movement_space_x = [obj.radius, config.WINDOW_WIDTH - obj.radius]
             movement_space_y = [obj.radius, config.WINDOW_HEIGHT - obj.radius]
 
@@ -118,29 +79,41 @@ class GameSimEngine():
                     obj.pos[1] = movement_space_y[0]
                 if obj.pos[1] >= movement_space_y[1]:
                     obj.pos[1] = movement_space_y[1]
+
         else:
-            movement_space_x = [config.PITCH_CORNER_X + obj.radius,
-                                config.PITCH_CORNER_X + config.PITCH_WIDTH - obj.radius]
-            movement_space_y = [config.PITCH_CORNER_Y + obj.radius,
-                                config.PITCH_CORNER_Y + config.PITCH_HEIGHT - obj.radius]
 
-            if obj.pos[0] <= movement_space_x[0] or obj.pos[0] >= movement_space_x[1]:
-                if obj.pos[1] >= config.GOAL_Y[0] and obj.pos[1] <= config.GOAL_Y[1]:
-                    pass
-                else:
-                    obj.vel[0] = - 0.5 * obj.vel[0]
-                    if obj.pos[0] <= movement_space_x[0]:
-                        obj.pos[0] = movement_space_x[0] + (movement_space_x[0] - obj.pos[0]) / 2
+            movement_space_x = [config.PITCH_CORNER_X + obj.radius, config.WINDOW_WIDTH - config.PITCH_CORNER_X
+                                - obj.radius]
+            movement_space_y = [config.PITCH_CORNER_Y + obj.radius, config.WINDOW_HEIGHT - config.PITCH_CORNER_Y
+                                - obj.radius] 
+            nobounce = False
 
-                    if obj.pos[0] >= movement_space_x[1]:
-                        obj.pos[0] = movement_space_x[1] + (movement_space_x[1] - obj.pos[0]) / 2
+            if obj.pos[0] <= movement_space_x[0]:
+                for goal in self.goals_left:
+                    if obj.pos[1] >= config.PITCH_CORNER_Y + goal.position and \
+                            obj.pos[1] <= config.PITCH_CORNER_Y + goal.position + goal.size:
+                        nobounce = True
 
-            if obj.pos[1] <= movement_space_y[0] or obj.pos[1] >= movement_space_y[1]:
-                obj.vel[1] = - 0.5 * obj.vel[1]
-                if obj.pos[1] <= movement_space_y[0]:
-                    obj.pos[1] = movement_space_y[0] + (movement_space_y[0] - obj.pos[1]) / 2
-                if obj.pos[1] >= movement_space_y[1]:
-                    obj.pos[1] = movement_space_y[1] + (movement_space_y[1] - obj.pos[1]) / 2
+            if obj.pos[0] >= movement_space_x[1]:
+                for goal in self.goals_right:
+                    if obj.pos[1] >= config.PITCH_CORNER_Y + goal.position and \
+                            obj.pos[1] <= config.PITCH_CORNER_Y + goal.position + goal.size:
+                        nobounce = True
+
+            if obj.pos[1] <= movement_space_y[0]:
+                for goal in self.goals_top:
+                    if obj.pos[0] >= config.PITCH_CORNER_X + goal.position and \
+                            obj.pos[0] <= config.PITCH_CORNER_X + goal.position + goal.size:
+                        nobounce = True
+
+            if obj.pos[1] >= movement_space_y[1]:
+                for goal in self.goals_bottom:
+                    if obj.pos[0] >= config.PITCH_CORNER_X + goal.position and \
+                            obj.pos[0] <= config.PITCH_CORNER_X + goal.position + goal.size:
+                        nobounce = True
+
+            if not nobounce:
+                self.bounceInPitch(obj, movement_space_x, movement_space_y)
 
     def makeEntityHitBall(self, obj, ball):
         # Updates the ball's velocity since a kick call was called from obj to ball
@@ -150,7 +123,7 @@ class GameSimEngine():
 
         return
 
-    def resolveCollision(self, obj1, obj2, is_obj1_static=0):
+    def resolveCollisionBetweenCircles(self, obj1, obj2, is_obj1_static=0):
         # if there is a collision between the two objects, resolve it. Assumes two circles
         # Has flag for the case where obj2 is static and doesn't get any momentum
         direction = (obj1.pos - obj2.pos)
@@ -212,28 +185,50 @@ class GameSimEngine():
 
             return True
 
+    def resolveCollisionBetweenCircleAndWall(self, wall, circle):
+
+        # if there is a collision between the two objects, resolve it. Assumes two circles
+        # Has flag for the case where obj2 is static and doesn't get any momentum
+        direction = wall.getDirectionTo(circle)
+        distance = wall.getDistanceTo(circle)
+        closestwallpoint = wall.proj_into_rect(circle)
+
+        # if the objects aren't overlapping, don't even bother resolving
+        if distance > circle.radius:
+            return False
+
+        # calculates normal and tangent vectors
+        collisionnormal = direction
+
+        collisiontangent = np.array([direction[1], - direction[0]]) / (np.linalg.norm(direction))
+
+        if collisionnormal[0] is np.NaN:
+            raise ValueError()
+
+        bouncingq = circle.bouncingquotient * wall.bouncingquotient
+
+        # updates obj2 components since that's the only moving part
+        obj1normalvelocity = np.dot(np.array(circle.vel), collisionnormal)
+        obj2normalvelocity = 0
+        velocityafter = (obj1normalvelocity + obj2normalvelocity) * bouncingq * 2
+
+        obj1tangentvelocity = np.dot(np.array(circle.vel), collisiontangent)
+
+        circle.vel = - velocityafter * np.array(collisionnormal) + obj1tangentvelocity * np.array(collisiontangent)
+        circle.pos = closestwallpoint + collisionnormal * (circle.radius)
+
+        return True
+
+    def resolveCollision(self, obj1, obj2, is_obj1_static=0):
+        if obj1.is_circle:
+            return self.resolveCollisionBetweenCircles(obj1, obj2, is_obj1_static)
+        else:
+            return self.resolveCollisionBetweenCircleAndWall(obj1, obj2)
+
     def detectAndResolveCollisions(self):
         # Handle ALL the collision in the sim, including borders, entities etc.
 
         # blocks the players that aren't kicking off from entering the centre/other half
-        if self.enforce_kickoff:
-            if not self.has_the_game_been_kicked_off:
-                if self.red_last_goal:
-                    for i in range(len(self.reds)):
-                        player = self.reds[i]
-                        if player.pos[0] >= config.WINDOW_WIDTH // 2 - player.radius:
-                            player.vel[0] = 0
-                            player.pos[0] = config.WINDOW_WIDTH // 2 - player.radius
-
-                        self.keepOutOfCentre(self.reds[i])
-                else:
-                    for i in range(len(self.blues)):
-                        player = self.blues[i]
-                        if player.pos[0] <= config.WINDOW_WIDTH // 2 + player.radius:
-                            player.vel[0] = 0
-                            player.pos[0] = config.WINDOW_WIDTH // 2 + player.radius
-
-                        self.keepOutOfCentre(self.blues[i])
 
         # Keep all the players within the playing field
         for player in self.players:
@@ -252,17 +247,14 @@ class GameSimEngine():
             for goalpost in self.goalposts:
                 self.resolveCollision(goalpost, thing, 1)
 
+        for wall in self.walls:
+            for thing in self.moving_objects:
+                self.resolveCollision(wall, thing, 1)
+
         # Handle ball kicks
         for player in self.players:
             for ball in self.balls:
                 if player.getDistanceTo(ball) <= player.radius + ball.radius + 4:
-                    self.has_the_game_been_kicked_off = True
-
-                    if player.team == "red":
-                        self.was_ball_touched_red = True
-
-                    if player.team == "blue":
-                        self.ball_was_touched_blue = True
 
                     if player.current_action.isKicking() and player.can_kick:
                         self.makeEntityHitBall(player, ball)
@@ -295,38 +287,17 @@ class GameSimEngine():
                 obj.reset("default")
         else:
             raise ValueError("Passed a wrong reset type to GameSim")
-
-        if self.enforce_kickoff:
-            self.has_the_game_been_kicked_off = False
         return
 
     def updateScore(self, reset_params="random"):
         # TODO: Fuck this.
-        game_ended = False
-        for ball in self.balls:
-            if ball.pos[0] <= config.PITCH_CORNER_X:
-                self.blue_score += 1
-                self.red_last_goal = False
-                self.was_point_scored = True
-                game_ended = True
-                self.resetMap(reset_params)
-            elif ball.pos[0] >= config.WINDOW_WIDTH - config.PITCH_CORNER_X:
-                self.red_score += 1
-                self.red_last_goal = True
-                self.was_point_scored = True
-                game_ended = True
-                self.resetMap(reset_params)
-        return game_ended
+        goals = self.checkGoals()
+        for i in range(len(self.team_scores)):
+            self.team_scores[i] += goals[i]
 
-    def checkGoals(self):
-        # Checks all the balls, returns tuple of (red scores, blue scores)
-        countedGoals = [0, 0]
-        for ball in self.balls:
-            if ball.pos[0] <= config.PITCH_CORNER_X:
-                countedGoals[1] += 1
-            elif ball.pos[0] >= config.WINDOW_WIDTH - config.PITCH_CORNER_X:
-                countedGoals[0] += 1
-        return countedGoals
+        if sum(goals) > 0:
+            self.was_point_scored = True
+            self.resetMap(reset_params)
 
     def resetTrackers(self):
         self.was_point_scored = False
@@ -334,3 +305,37 @@ class GameSimEngine():
         self.was_ball_touched_blue = False
         self.was_ball_touched_red = False
 
+    def checkGoals(self):
+        goals = [0 for _ in range(len(self.team_scores))]
+
+        movement_space_x = [config.PITCH_CORNER_X + config.BALL_RADIUS, config.WINDOW_WIDTH - config.PITCH_CORNER_X
+                            - config.BALL_RADIUS]
+        movement_space_y = [config.PITCH_CORNER_Y + config.BALL_RADIUS, config.WINDOW_HEIGHT - config.PITCH_CORNER_Y
+                            - config.BALL_RADIUS] 
+
+        for obj in self.balls:
+            if obj.pos[0] <= movement_space_x[0]:
+
+                for goal in self.goals_left:
+                    if obj.pos[1] >= config.PITCH_CORNER_Y + goal.position and \
+                            obj.pos[1] <= config.PITCH_CORNER_Y + goal.position + goal.size:
+                        goals[goal.team] = 1
+
+            if obj.pos[0] >= movement_space_x[1]:
+                for goal in self.goals_right:
+                    if obj.pos[1] >= config.PITCH_CORNER_Y + goal.position and \
+                            obj.pos[1] <= config.PITCH_CORNER_Y + goal.position + goal.size:
+                        goals[goal.team] = 1
+
+            if obj.pos[1] <= movement_space_y[0]:
+                for goal in self.goals_top:
+                    if obj.pos[0] >= config.PITCH_CORNER_X + goal.position and \
+                            obj.pos[0] <= config.PITCH_CORNER_X + goal.position + goal.size:
+                        goals[goal.team] = 1
+
+            if obj.pos[1] >= movement_space_y[1]:
+                for goal in self.goals_bottom:
+                    if obj.pos[0] >= config.PITCH_CORNER_X + goal.position and \
+                            obj.pos[0] <= config.PITCH_CORNER_X + goal.position + goal.size:
+                        goals[goal.team] = 1
+        return goals

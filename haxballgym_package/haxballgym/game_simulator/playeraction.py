@@ -95,6 +95,18 @@ class Action:
         else:
             return Action(((self.dir_idx + 3) % 8) + 1, self.kicking)
 
+    def rotated_90(self):
+        if self.dir_idx == 0:
+            return Action(self.dir_idx, self.kicking)
+        else:
+            return Action(((self.dir_idx + 1) % 8) + 1, self.kicking)
+
+    def rotated_270(self):
+        if self.dir_idx == 0:
+            return Action(self.dir_idx, self.kicking)
+        else:
+            return Action(((self.dir_idx + 5) % 8) + 1, self.kicking)
+
     @staticmethod
     def randomAction():
         return Action(random.randint(0, 8), random.randint(0, 1))

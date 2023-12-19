@@ -2,14 +2,13 @@ import os
 
 from haxballgym.game_displayer import basicdisplayer
 from haxballgym.config import config
-from haxballgym.game_simulator import gamesim
+from haxballgym.game_simulator import haxball
 from haxballgym.game_log import log
-from haxballgym.game_displayer import movedisplayer
 
 
-def play_visual_games(
-        red_agents,
-        blue_agents,
+def game_visualizer(
+        gamesim,
+        agents,
         print_debug=None,
         auto_score=True,
         rand_reset=True,
@@ -21,33 +20,20 @@ def play_visual_games(
         suppress_display=False,
         suppress_scorekeeping=False,
         step_length=1
-):      
-
-    red_debug_surf = movedisplayer.DebugSurf()
-    blue_debug_surf = movedisplayer.DebugSurf()
+):
 
     if not suppress_display:
-        display = basicdisplayer.GameWindow(config.WINDOW_WIDTH + 2 * 256, config.WINDOW_HEIGHT,
-                                            debug_surfs=[red_debug_surf.surf, blue_debug_surf.surf])
+        display = basicdisplayer.GameWindow(config.WINDOW_WIDTH + 2 * 256, config.WINDOW_HEIGHT)
     else:
         display = None
 
-    agents = red_agents + blue_agents
     for agent in agents:
         if suppress_display and agent.requires_human_input:
             raise ValueError("Human players need display to function")
         if agent.requires_human_input and agent.gui is None:
             agent.gui = display
 
-    config.NUM_RED_PLAYERS = len(red_agents)
-    config.NUM_BLUE_PLAYERS = len(blue_agents)
-
-    game = gamesim.GameSim(config.NUM_RED_PLAYERS, config.NUM_BLUE_PLAYERS,
-                           config.NUM_BALLS, printDebug=print_debug,
-                           print_score_update=not suppress_scorekeeping,
-                           auto_score=auto_score,
-                           rand_reset=rand_reset,
-                           max_steps=max_steps)
+    game = gamesim
 
     red_wins = 0
     blue_wins = 0
@@ -112,3 +98,94 @@ def play_visual_games(
             break
 
     return red_wins, blue_wins
+
+
+def play_visual_games_2team(
+        red_agents,
+        blue_agents,
+        print_debug=None,
+        auto_score=True,
+        rand_reset=True,
+        max_steps=2147483648,
+        max_games=2147483648,
+        save_dir=None,
+        save_master_dir='',
+        save_step_length=1,
+        suppress_display=False,
+        suppress_scorekeeping=False,
+        step_length=1
+):
+
+    agents = red_agents + blue_agents
+
+    config.TEAM_NUMBERS = [len(red_agents), len(blue_agents)]
+
+    game = haxball.TwoTeamHaxballGamesim(len(red_agents), len(blue_agents),
+                                         config.NUM_BALLS, printDebug=print_debug,
+                                         print_score_update=not suppress_scorekeeping,
+                                         auto_score=auto_score,
+                                         rand_reset=rand_reset,
+                                         max_steps=max_steps)
+
+    game_visualizer(
+        game,
+        agents,
+        print_debug,
+        auto_score,
+        rand_reset,
+        max_steps,
+        max_games,
+        save_dir,
+        save_master_dir,
+        save_step_length,
+        suppress_display,
+        suppress_scorekeeping,
+        step_length
+    )
+
+
+def play_visual_games_4team(
+        red_agents,
+        blue_agents,
+        orange_agents,
+        green_agents,
+        print_debug=None,
+        auto_score=True,
+        rand_reset=True,
+        max_steps=2147483648,
+        max_games=2147483648,
+        save_dir=None,
+        save_master_dir='',
+        save_step_length=1,
+        suppress_display=False,
+        suppress_scorekeeping=False,
+        step_length=1
+):
+
+    agents = red_agents + blue_agents + orange_agents + green_agents
+
+    config.TEAM_NUMBERS = [len(red_agents), len(blue_agents), len(orange_agents), len(green_agents)]
+
+    game = haxball.FourTeamHaxballGameSim(len(red_agents), len(blue_agents),
+                                          len(orange_agents), len(green_agents),
+                                          config.NUM_BALLS, printDebug=print_debug,
+                                          print_score_update=not suppress_scorekeeping,
+                                          auto_score=auto_score,
+                                          rand_reset=rand_reset,
+                                          max_steps=max_steps)
+
+    game_visualizer(
+        game,
+        agents,
+        print_debug,
+        auto_score,
+        rand_reset,
+        max_steps,
+        max_games,
+        save_dir,
+        save_master_dir,
+        save_step_length,
+        suppress_display,
+        suppress_scorekeeping,
+        step_length
+    )

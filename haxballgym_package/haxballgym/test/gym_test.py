@@ -1,8 +1,8 @@
 import numpy as np
-from haxballgym.environments.single_player_env import SinglePlayerEnvironment
-from haxballgym.environments.loaded_opponent_env import LoadedOpponentEnv
-from haxballgym.agents.randomagent import RandomAgent
-from haxballgym.config import config
+from environments.single_player_env import SinglePlayerEnvironment
+from environments.loaded_opponent_env_1v1 import LoadedOpponentEnv1v1
+from agents.randomagent import RandomAgent
+from config import config
 
 
 #######################################################
@@ -22,5 +22,5 @@ def test_single_player_env():
 def test_multi_player_env():
     config.NUM_BLUE_PLAYERS = 1
     config.NUM_RED_PLAYERS = 1
-    env = LoadedOpponentEnv(opponent=RandomAgent())
+    env = LoadedOpponentEnv1v1(opponent=RandomAgent())
     env.step(np.array([1, 1]))

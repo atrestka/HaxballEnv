@@ -1,7 +1,7 @@
-import haxballgym.game_simulator.gamesim as gs
+import haxballgym.game_simulator.haxball as gs
 from haxballgym.config import config
 from haxballgym.game_displayer import basicdisplayer
-from haxballgym.agents import humanagent
+import haxballgym.agents.humanagent as humanagent
 from haxballgym.game_log import log
 import pygame
 
