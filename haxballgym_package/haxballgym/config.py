@@ -11,7 +11,7 @@ class Configuration:
 
     # player and ball parameters
     NUM_RED_PLAYERS = 1
-    NUM_BLUE_PLAYERS = 0
+    NUM_BLUE_PLAYERS = 1
     NUM_BALLS = 1
 
     # field size parameters

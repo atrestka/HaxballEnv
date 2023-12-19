@@ -9,18 +9,20 @@ class HumanAgent():
         # Movement keys of the agent in the following order: up, right, down, left
         if keybindings is not None:
             self.movement_keys = keybindings[0:4]
+            # Kicking key for the agent
+            self.kick = keybindings[4]
 
         elif team == "red":
-            self.movement_keys = config.DEFAULT_RED_BINDINGS
+            self.movement_keys = config.DEFAULT_RED_BINDINGS[0:4]
+            self.kick = config.DEFAULT_RED_BINDINGS[4]
 
         elif team == "blue":
-            self.movement_keys = config.DEFAULT_BLUE_BINDINGS
+            self.movement_keys = config.DEFAULT_BLUE_BINDINGS[0:4]
+            self.kick = config.DEFAULT_BLUE_BINDINGS[4]
 
         else:
             raise ValueError("you must specify either keybindings or team")
 
-        # Kicking key for the agent
-        self.kick = keybindings[4]
 
         # gui gives the human commands (the pygame gui)
         self.gui = gui

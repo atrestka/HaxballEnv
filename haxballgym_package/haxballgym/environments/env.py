@@ -35,7 +35,7 @@ class HaxballGymEnvironment(Env):
     def getActions(self, action_list):
         raise NotImplementedError
     
-    def getStepReward(self, scoring_player):
+    def getStepReward(self, scoring_player, ball_touched_red):
         raise NotImplementedError()
 
     def step(self, action_list):
