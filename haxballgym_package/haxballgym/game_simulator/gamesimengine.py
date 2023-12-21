@@ -4,12 +4,14 @@ import numpy as np
 
 
 class GameSimEngine():
-    def __init__(self, players, balls, goals, walls, seed=-1):
+    def __init__(self, players, balls, goals, walls, other_rectangles, auto_reset=True, seed=-1):
         # Intialise the entities
         self.players = players
         self.balls = balls
         self.goals = goals
         self.walls = walls
+        self.other_rectangles = other_rectangles
+        self.auto_reset = auto_reset
 
         self.goals_left = [g for g in self.goals if g.side == "left"]
         self.goals_right = [g for g in self.goals if g.side == "right"]
@@ -297,7 +299,19 @@ class GameSimEngine():
 
         if sum(goals) > 0:
             self.was_point_scored = True
-            self.resetMap(reset_params)
+            if self.auto_reset:
+                self.resetMap(reset_params)
+            return True
+
+        add_points = self.additionalPointCheck()
+        if sum(add_points) > 0:
+            self.was_point_scored = True
+            if self.auto_reset:
+                self.resetMap(reset_params)
+            return True
+
+    def additionalPointCheck(self):
+        return [0]
 
     def resetTrackers(self):
         self.was_point_scored = False
@@ -339,3 +353,11 @@ class GameSimEngine():
                             obj.pos[0] <= config.PITCH_CORNER_X + goal.position + goal.size:
                         goals[goal.team] = 1
         return goals
+
+    def updateRectangleActivity(self):
+        for rect in self.other_rectangles:
+            rect.active = False
+            if rect.active_criterion == "player":
+                for player in self.players:
+                    if rect.checkEntityOnTopOf(player):
+                        rect.active = True

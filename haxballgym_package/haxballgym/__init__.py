@@ -4,4 +4,4 @@ from haxballgym.agents.randomagent import RandomAgent
 from haxballgym.agents.idleagent import IdleAgent
 from haxballgym.agents.templatenumpyagent import TemplateAgent
 from haxballgym.agents.humanagent import HumanAgent
-from haxballgym.pygame_player import play_visual_games_2team, play_visual_games_4team
+from haxballgym.pygame_player import play_visual_games_2team, play_visual_games_4team, play_visual_games_pennymatching

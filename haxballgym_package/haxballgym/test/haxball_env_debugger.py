@@ -1,5 +1,5 @@
 import numpy as np
-from environments.single_player_env import SinglePlayerEnvironment
+from haxballgym.environments.single_player_env import SinglePlayerEnvironment
 
 
 def single_player_debug():

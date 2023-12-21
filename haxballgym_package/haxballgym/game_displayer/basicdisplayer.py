@@ -90,7 +90,7 @@ class GameWindow:
             gfxdraw.aacircle(self.win, int(p.x), int(p.y),
                              config.PLAYER_RADIUS - config.KICKING_CIRCLE_THICKNESS, colour)
 
-        def drawBox(b, colour):
+        def drawBox(b, colour, outer_colour=(0, 0, 0)):
             rect_outer = pygame.Rect(b.x,
                                      b.y,
                                      b.width,
@@ -99,9 +99,14 @@ class GameWindow:
                                b.y + config.GOALPOST_BORDER_THICKNESS,
                                b.width - 2 * config.GOALPOST_BORDER_THICKNESS,
                                b.height - 2 * config.GOALPOST_BORDER_THICKNESS)
-            gfxdraw.box(self.win, rect_outer, (0, 0, 0))
+            gfxdraw.box(self.win, rect_outer, outer_colour)
             gfxdraw.box(self.win, rect, colour)
 
+        for b in frame.other_rectangles:
+            if not b.active:
+                drawBox(b, config.OTHER_RECT_COLOUR, config.GOAL_LINE_COLOUR)
+            else:
+                drawBox(b, config.OTHER_RECT_ACTIVE_COLOUR, config.GOAL_LINE_COLOUR)         
         for p in frame.players:
             drawPlayer(p, config.TEAM_COLOURS[p.team])
         for g in frame.goalposts:

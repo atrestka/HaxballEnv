@@ -1,6 +1,7 @@
 from haxballgym.config import config
 from haxballgym.game_simulator import playeraction
 from haxballgym.game_log import log
+import copy
 
 import numpy as np
 
@@ -31,7 +32,7 @@ class Player(CircleEntity):
                               config.PLAYER_RADIUS, config.PLAYER_BOUNCING)
 
         # Set the not random reset position
-        self.default_position = initial_position
+        self.default_position = copy.deepcopy(initial_position)
 
         # Initialise current action + can_kick which presents kick-spamming
         self.current_action = playeraction.Action()
@@ -60,7 +61,7 @@ class Player(CircleEntity):
             self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
                                  config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
         elif reset_type == "default":
-            self.pos = self.default_position
+            self.pos = copy.copy(self.default_position)
         else:
             raise ValueError("Passed a wrong reset type to a player")
 

@@ -2,7 +2,8 @@ import os
 
 from haxballgym.game_displayer import basicdisplayer
 from haxballgym.config import config
-from haxballgym.game_simulator import haxball
+from haxballgym.haxball import haxball
+from haxballgym.penny_matching import pennymatching
 from haxballgym.game_log import log
 
 
@@ -163,6 +164,40 @@ def play_visual_games_4team(
                                           auto_score=auto_score,
                                           rand_reset=rand_reset,
                                           max_steps=max_steps)
+
+    game_visualizer(
+        game,
+        agents,
+        max_games,
+        save_dir,
+        save_master_dir,
+        save_step_length,
+        suppress_display,
+        step_length
+    )
+
+
+def play_visual_games_pennymatching(
+        red_agents,
+        blue_agents,
+        print_debug=None,
+        auto_score=True,
+        rand_reset=True,
+        max_steps=2147483648,
+        max_games=2147483648,
+        save_dir=None,
+        save_master_dir='',
+        save_step_length=1,
+        suppress_display=False,
+        suppress_scorekeeping=False,
+        step_length=1
+):
+
+    agents = red_agents + blue_agents
+
+    config.TEAM_NUMBERS = [len(red_agents), len(blue_agents)]
+
+    game = pennymatching.PennyMatchingGameSim()
 
     game_visualizer(
         game,

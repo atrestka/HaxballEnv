@@ -41,6 +41,7 @@ class RectangleState:
     y: float
     width: float
     height: float
+    active: bool = False
 
 
 @dataclass
@@ -65,22 +66,36 @@ class Frame:
     balls: List[BallState]
     goalposts: List[GoalpostState]
     rectangles: List[RectangleState]
+    other_rectangles: List[RectangleState]
     frame: int = 0
 
-    def posToNp(self, flip_dir=0, pad_to_n_players=0, pad_to_n_balls=0, my_team=None, normalise=True):
+    def posToNp(self, flip_dir=0, pad_to_n_players=0, pad_to_n_balls=0, my_team=None, normalise=True, player_ind=None):
         example_player = self.players[0]
 
-        if my_team is None:
-            return np.array(
-                [x for p in self.players for x in p.posToList(flip_dir, normalise)]
-                + [x * 0 for x in example_player.posToList(flip_dir, normalise)
-                    for _ in range(max(0, pad_to_n_players - len(self.players)))]
-                + [x for b in self.balls for x in b.posToList(flip_dir, normalise)]
-                + [x * 0 for x in example_player.posToList(flip_dir, normalise)
-                    for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
-            )
+        if player_ind is None:
+            if my_team is None:
+                return np.array(
+                    [x for p in self.players for x in p.posToList(flip_dir, normalise)]
+                    + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                        for _ in range(max(0, pad_to_n_players - len(self.players)))]
+                    + [x for b in self.balls for x in b.posToList(flip_dir, normalise)]
+                    + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                        for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
+                )
+            else:
+                raise ValueError("I have not implemented this yet :(")
         else:
-            raise ValueError("I have not implemented this yet :(")
+            if my_team is None:
+                return np.array(
+                    [x for i in player_ind for x in self.players[i].posToList(flip_dir, normalise)]
+                    + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                        for _ in range(max(0, pad_to_n_players - len(self.players)))]
+                    + [x for b in self.balls for x in b.posToList(flip_dir, normalise)]
+                    + [x * 0 for x in example_player.posToList(flip_dir, normalise)
+                        for _ in range(max(0, pad_to_n_balls - len(self.balls)))]
+                )
+            else:
+                raise ValueError("I have not implemented this yet :(")
 
     def singleActToNp(self, me, flip=0):
         return np.array(self.players[me].actToList(flip))

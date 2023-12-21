@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 import numpy as np
+import yaml
+from pathlib import Path
 
 
 @dataclass
@@ -11,7 +13,7 @@ class Configuration:
 
     # player and ball parameters
     TEAM_NUMBERS = [1]  # [red (left), blue (right), yellow (top), green (bottom)]
-    NUM_BALLS = 1
+    NUM_BALLS = 0
 
     # field size parameters
     WINDOW_WIDTH = 840
@@ -56,6 +58,17 @@ class Configuration:
     KICK_REWARD = 1.
 
     ################################
+    ### PENNY MATCHING SETTINGS ####
+    ################################
+
+    # defines the map
+    CENTRE_WALL_SIZE = 20
+    PENNYMATCHING_TERMINAL_STEP = 200
+    PENNYMATCHING_FAIL_REWARD = -5
+    PENNYMATCHING_LOSE_REWARD = -1
+    PENNYMATCHING_WIN_REWARD = 1
+
+    ################################
     ## PYGAME VISUALIZER SETTINGS ##
     ################################
 
@@ -64,6 +77,8 @@ class Configuration:
     GOALPOST_COLOUR = (150, 150, 150)
     BALL_COLOUR = (0, 0, 0)
     WALL_COLOUR = (50, 50, 50)
+    OTHER_RECT_COLOUR = (120, 150, 90)
+    OTHER_RECT_ACTIVE_COLOUR = (120, 170, 90)
     GOAL_LINE_COLOUR = (199, 230, 189)
     PITCH_COLOUR = (127, 162, 112)
     BORDER_COLOUR = (113, 140, 90)
@@ -114,6 +129,16 @@ class Configuration:
     # number of things in the game
     NUM_ENTITIES = sum(TEAM_NUMBERS) + NUM_BALLS
     NUM_PLAYERS = sum(TEAM_NUMBERS)
+
+
+# for updating config from individual game yaml config files
+def update_config_from_yaml(config, cfg_yaml):
+    cfg_yaml = yaml.safe_load(Path(cfg_yaml).read_text())
+
+    for key in dir(config):
+        if key[0] != '_':
+            if key in dict(cfg_yaml).keys():
+                setattr(config, key, cfg_yaml[key])
 
 
 # define the config

@@ -13,7 +13,7 @@ red_random = haxballgym.RandomAgent(10)
 # agent which does nothing
 idle_agent = haxballgym.IdleAgent()
 
-
+"""
 # PPO-trained agent
 ppo_agent = PPOBaselineAgent(
     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example_single_player.zip',
@@ -21,11 +21,12 @@ ppo_agent = PPOBaselineAgent(
     haxballgym.SinglePlayerEnvironment()
 )
 
+
 # play visual games
-haxballgym.play_visual_games_2team(red_agents=[ppo_agent], blue_agents=[], print_debug=True)
+haxballgym.play_visual_games_pennymatching(red_agents=[human_agent], blue_agents=[red_random], print_debug=True)
 
 
-"""
+
 # DQN-trained agent
 dqn_agent = DQNBaselineAgent(
     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/DQN_example_single_player.zip',
@@ -50,6 +51,8 @@ A3C_agent_blue = ActorCriticAgent(
     team=1
 )
 
-# play visual games
-haxballgym.play_visual_games_2team(red_agents=[A3C_agent_red], blue_agents=[A3C_agent_blue], print_debug=True)
 """
+
+# play visual games
+haxballgym.play_visual_games_4team([red_random], [red_random], [red_random], [red_random], print_debug=True)
+

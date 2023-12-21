@@ -1,5 +1,5 @@
 from haxballgym.environments.env import HaxballGymEnvironmentTemplate
-from haxballgym.game_simulator.haxball import TwoTeamHaxballGamesim
+from haxballgym.haxball.haxball import TwoTeamHaxballGamesim
 from haxballgym.game_simulator import playeraction
 from haxballgym.config import config
 import gym
@@ -17,6 +17,7 @@ class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
             auto_score=True,
             rand_reset=rand_reset,
             max_steps=max_steps,
+            auto_reset=False
         )
 
         HaxballGymEnvironmentTemplate.__init__(self, gamesim, step_len, max_steps, norming)

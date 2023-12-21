@@ -1,0 +1,51 @@
+
+
+################################
+######## GAME SETTINGS #########
+################################
+
+# player and ball parameters
+TEAM_NUMBERS: [1, 1]  # [red (left), blue (right), yellow (top), green (bottom)]
+NUM_BALLS: 1
+
+# field size parameters
+WINDOW_WIDTH: 840
+WINDOW_HEIGHT: 400
+PITCH_WIDTH: 640
+PITCH_HEIGHT: 260
+GOAL_SIZE: 110
+
+# length of game
+MAX_SCORE: 1
+
+# game parameters for the player
+PLAYER_RADIUS: 15
+PLAYER_BOUNCING: 0.5
+PLAYER_INV_MASS: 0.5
+PLAYER_DAMPING: 0.96
+ACCELARATION: 0.1
+KICK_ACCELARATION: 0.07
+KICK_STRENGTH: 5
+
+# game parameters for the ball
+BALL_RADIUS: 10
+BALL_DAMPING: 0.99
+BALL_INV_MASS: 1
+BALL_BOUNCING: 0.5
+
+# start position parameters (for when no random start)
+PLAYER_START_POSITIONS: []
+BALL_START_POSITIONS: []
+
+# parameters for the pitch drawing
+GOALPOST_RADIUS: 8
+GOALPOST_BOUNCING_QUOTIENT: 0.5
+GOALPOST_BORDER_THICKNESS: 2
+GOAL_LINE_THICKNESS: 3
+KICKING_CIRCLE_RADIUS: 15
+KICKING_CIRCLE_THICKNESS: 2
+
+# reward parameters
+WIN_REWARD: 1000.
+BALL_PROXIMITY_REWARD: 1.
+KICK_REWARD: 1.

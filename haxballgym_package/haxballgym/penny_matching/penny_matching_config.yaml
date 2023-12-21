@@ -1,0 +1,27 @@
+################################
+######## GAME SETTINGS #########
+################################
+
+# player and ball parameters
+TEAM_NUMBERS: [1, 1]  # [red (left), blue (right), yellow (top), green (bottom)]
+NUM_BALLS: 0
+
+# field size parameters
+WINDOW_WIDTH: 840
+WINDOW_HEIGHT: 400
+PITCH_WIDTH: 640
+PITCH_HEIGHT: 260
+
+# length of game
+MAX_SCORE: 1
+
+################################
+### PENNY MATCHING SETTINGS ####
+################################
+
+# defines the map
+CENTRE_WALL_SIZE: 20
+PENNYMATCHING_TERMINAL_STEP: 200
+PENNYMATCHING_FAIL_REWARD: -5
+PENNYMATCHING_LOSE_REWARD: -1
+PENNYMATCHING_WIN_REWARD: 1

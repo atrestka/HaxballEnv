@@ -1,6 +1,6 @@
 from haxballgym.environments.env import HaxballGymEnvironmentTemplate
 from haxballgym.game_simulator import playeraction
-from haxballgym.game_simulator.haxball import TwoTeamHaxballGamesim
+from haxballgym.haxball.haxball import TwoTeamHaxballGamesim
 from haxballgym.config import config
 import gym
 from haxballgym.agents.randomagent import RandomAgent
@@ -22,6 +22,7 @@ class LoadedOpponentEnv1v1(HaxballGymEnvironmentTemplate):
             auto_score=True,
             rand_reset=rand_reset,
             max_steps=max_steps,
+            auto_reset=False
         )
 
         HaxballGymEnvironmentTemplate.__init__(self, gamesim, step_len, max_steps, norming)

@@ -13,7 +13,10 @@ class HaxballGymEnvironmentTemplate(Env):
         self.norming = norming
 
         self.game_sim = game_sim
-        self.game_sim.resetMap()
+        if self.game_sim.rand_reset:
+            self.game_sim.resetMap()
+        else:
+            self.game_sim.resetMap("all default")
         self.steps_since_reset = 0
         self.display = None
         self.last_ballprox = 0
@@ -43,12 +46,16 @@ class HaxballGymEnvironmentTemplate(Env):
         ball_touched_red = False
 
         for i in range(self.step_len):
-            self.game_sim.step()
+            game_ended = self.game_sim.step()
+            print(game_ended)
             goal = self.goalScored()
             ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
             # If a goal is scored return instantly
-            if goal != 0:
-                return [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
+            if goal != 0 or game_ended:
+                print('ending game!')
+                print(self.getStepReward(goal, ball_touched_red))
+                result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
+                return result
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
@@ -74,7 +81,10 @@ class HaxballGymEnvironmentTemplate(Env):
 
     def reset(self):
         self.steps_since_reset = 0
-        self.game_sim.resetMap("random")
+        if self.game_sim.rand_reset:
+            self.game_sim.resetMap()
+        else:
+            self.game_sim.resetMap("all default")
         return self.getState()
 
     def goalScored(self):
