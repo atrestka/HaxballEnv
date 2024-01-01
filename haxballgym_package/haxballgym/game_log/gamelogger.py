@@ -1,4 +1,4 @@
-import haxballgym.game_simulator.haxball as gs
+import haxballgym_package.haxballgym.haxball.haxball as gs
 from haxballgym.config import config
 from haxballgym.game_displayer import basicdisplayer
 import haxballgym.agents.humanagent as humanagent

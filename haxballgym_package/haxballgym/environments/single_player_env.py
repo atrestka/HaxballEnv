@@ -8,7 +8,7 @@ import gym
 class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
     def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=False):
 
-        config.TEAM_NUMBERS = [1, 0]
+        config.TEAM_NUMBERS = [1]
 
         gamesim = TwoTeamHaxballGamesim(
             1,
@@ -16,7 +16,7 @@ class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
             1,
             auto_score=True,
             rand_reset=rand_reset,
-            max_steps=max_steps,
+            max_steps=max_steps * step_len,
             auto_reset=False
         )
 

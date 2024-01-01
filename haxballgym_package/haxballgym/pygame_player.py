@@ -31,9 +31,6 @@ def game_visualizer(
 
     game = gamesim
 
-    red_wins = 0
-    blue_wins = 0
-
     # Run the game
     for game_number in range(max_games):
         exit_loop = False
@@ -66,11 +63,6 @@ def game_visualizer(
                         game_logger.append(game.log())
 
                 if game_ended:
-                    # save winner
-                    if game.red_score > game.blue_score:
-                        red_wins += 1
-                    elif game.blue_score > game.red_score:
-                        blue_wins += 1
 
                     # Save the game logger data if enabled
                     if save_dir is not None:
@@ -92,8 +84,6 @@ def game_visualizer(
                     break
         if exit_loop:
             break
-
-    return red_wins, blue_wins
 
 
 def play_visual_games_2team(

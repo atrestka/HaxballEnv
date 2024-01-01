@@ -44,31 +44,22 @@ class PennyMatchingGameSim(HaxballGameSim):
 
     def additionalPointCheck(self):
         if self.steps >= config.PENNYMATCHING_TERMINAL_STEP - 1:
-            print("I AM IN HERE NOW")
 
             if self.other_recrangles[0].active and self.other_recrangles[2].active:
-                print('a')
                 return [1, 0]
             if self.other_recrangles[1].active and self.other_recrangles[3].active:
-                print('b')
                 return [1, 0]
             if self.other_recrangles[0].active and self.other_recrangles[3].active:
-                print('c')
                 return [0, 1]
             if self.other_recrangles[1].active and self.other_recrangles[2].active:
-                print('d')
                 return [0, 1]
 
             if self.other_recrangles[0].active or self.other_recrangles[1].active:
-                print('e')
                 return [0, 2]
 
             if self.other_recrangles[2].active or self.other_recrangles[3].active:
-                print('f')
                 return [2, 0]
 
-            print('g')
             return [2, 2]
         else:
-            print('h')
             return [0, 0]

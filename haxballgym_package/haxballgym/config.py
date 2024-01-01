@@ -101,34 +101,38 @@ class Configuration:
     ###### GAME CALCULATIONS #######
     ################################
 
-    # defines relevant pitch coordinates for calculation
-    PITCH_CORNER_X = int(np.floor((WINDOW_WIDTH - PITCH_WIDTH) / 2))
-    PITCH_CORNER_Y = int(np.floor((WINDOW_HEIGHT - PITCH_HEIGHT) / 2))
-    GOAL_CORNER_Y = int(np.floor((WINDOW_HEIGHT - GOAL_SIZE) / 2))
+    def __init__(self):
+        self.calculations()
 
-    # I have no idea what this is
-    y1 = PITCH_CORNER_X - 30
-    z1 = PITCH_CORNER_X + PITCH_WIDTH
-    z2 = GOAL_CORNER_Y
-    a1 = y1 + 2 * BALL_RADIUS
-    a2 = int(np.floor(GOAL_CORNER_Y - GOAL_LINE_THICKNESS / 2))
-    b1 = z1
-    b2 = int(np.floor(GOAL_CORNER_Y - GOAL_LINE_THICKNESS / 2))
+    def calculations(self):
+        # defines relevant pitch coordinates for calculation
+        self.PITCH_CORNER_X = int(np.floor((self.WINDOW_WIDTH - self.PITCH_WIDTH) / 2))
+        self.PITCH_CORNER_Y = int(np.floor((self.WINDOW_HEIGHT - self.PITCH_HEIGHT) / 2))
+        self.GOAL_CORNER_Y = int(np.floor((self.WINDOW_HEIGHT - self.GOAL_SIZE) / 2))
 
-    # defines the movespace of a player
-    MOVESPACE_X = [PLAYER_RADIUS, WINDOW_WIDTH - PLAYER_RADIUS]
-    MOVESPACE_Y = [PLAYER_RADIUS, WINDOW_HEIGHT - PLAYER_RADIUS]
+        # I have no idea what this is
+        self.y1 = self.PITCH_CORNER_X - 30
+        self.z1 = self.PITCH_CORNER_X + self.PITCH_WIDTH
+        self.z2 = self.GOAL_CORNER_Y
+        self.a1 = self.y1 + 2 * self.BALL_RADIUS
+        self.a2 = int(np.floor(self.GOAL_CORNER_Y - self.GOAL_LINE_THICKNESS / 2))
+        self.b1 = self.z1
+        self.b2 = int(np.floor(self.GOAL_CORNER_Y - self.GOAL_LINE_THICKNESS / 2))
 
-    # defines the movespace of a ball
-    BALLSPACE_X = [PITCH_CORNER_X + BALL_RADIUS, PITCH_CORNER_X + PITCH_WIDTH - BALL_RADIUS]
-    BALLSPACE_Y = [PITCH_CORNER_Y + BALL_RADIUS, PITCH_CORNER_Y + PITCH_HEIGHT - BALL_RADIUS]
+        # defines the movespace of a player
+        self.MOVESPACE_X = [self.PLAYER_RADIUS, self.WINDOW_WIDTH - self.PLAYER_RADIUS]
+        self.MOVESPACE_Y = [self.PLAYER_RADIUS, self.WINDOW_HEIGHT - self.PLAYER_RADIUS]
 
-    # defines goal width
-    GOAL_Y = [GOAL_CORNER_Y, GOAL_CORNER_Y + GOAL_SIZE]
+        # defines the movespace of a ball
+        self.BALLSPACE_X = [self.PITCH_CORNER_X + self.BALL_RADIUS, self.PITCH_CORNER_X + self.PITCH_WIDTH - self.BALL_RADIUS]
+        self.BALLSPACE_Y = [self.PITCH_CORNER_Y + self.BALL_RADIUS, self.PITCH_CORNER_Y + self.PITCH_HEIGHT - self.BALL_RADIUS]
 
-    # number of things in the game
-    NUM_ENTITIES = sum(TEAM_NUMBERS) + NUM_BALLS
-    NUM_PLAYERS = sum(TEAM_NUMBERS)
+        # defines goal width
+        self.GOAL_Y = [self.GOAL_CORNER_Y, self.GOAL_CORNER_Y + self.GOAL_SIZE]
+
+        # number of things in the game
+        self.NUM_ENTITIES = sum(self.TEAM_NUMBERS) + self.NUM_BALLS
+        self.NUM_PLAYERS = sum(self.TEAM_NUMBERS)
 
 
 # for updating config from individual game yaml config files
@@ -139,6 +143,8 @@ def update_config_from_yaml(config, cfg_yaml):
         if key[0] != '_':
             if key in dict(cfg_yaml).keys():
                 setattr(config, key, cfg_yaml[key])
+
+    config.calculations()
 
 
 # define the config

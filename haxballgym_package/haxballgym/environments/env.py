@@ -19,7 +19,7 @@ class HaxballGymEnvironmentTemplate(Env):
             self.game_sim.resetMap("all default")
         self.steps_since_reset = 0
         self.display = None
-        self.last_ballprox = 0
+        self.last_ballprox = self.game_sim.getBallProximityScore(0)
 
         # define gym spaces
         self.action_space = gym.spaces.MultiDiscrete([18 for _ in
@@ -39,6 +39,9 @@ class HaxballGymEnvironmentTemplate(Env):
 
     def step(self, action_list):
 
+        if isinstance(action_list, int):
+            action_list = np.array([action_list])
+
         self.steps_since_reset += 1
         actions = self.getActions(action_list)
 
@@ -47,13 +50,10 @@ class HaxballGymEnvironmentTemplate(Env):
 
         for i in range(self.step_len):
             game_ended = self.game_sim.step()
-            print(game_ended)
             goal = self.goalScored()
             ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
             # If a goal is scored return instantly
             if goal != 0 or game_ended:
-                print('ending game!')
-                print(self.getStepReward(goal, ball_touched_red))
                 result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
                 return result
 

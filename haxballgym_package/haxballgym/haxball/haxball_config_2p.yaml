@@ -5,7 +5,7 @@
 ################################
 
 # player and ball parameters
-TEAM_NUMBERS: [1, 1]  # [red (left), blue (right), yellow (top), green (bottom)]
+TEAM_NUMBERS: [1]  # [red (left), blue (right), yellow (top), green (bottom)]
 NUM_BALLS: 1
 
 # field size parameters
@@ -36,14 +36,6 @@ BALL_BOUNCING: 0.5
 # start position parameters (for when no random start)
 PLAYER_START_POSITIONS: []
 BALL_START_POSITIONS: []
-
-# parameters for the pitch drawing
-GOALPOST_RADIUS: 8
-GOALPOST_BOUNCING_QUOTIENT: 0.5
-GOALPOST_BORDER_THICKNESS: 2
-GOAL_LINE_THICKNESS: 3
-KICKING_CIRCLE_RADIUS: 15
-KICKING_CIRCLE_THICKNESS: 2
 
 # reward parameters
 WIN_REWARD: 1000.

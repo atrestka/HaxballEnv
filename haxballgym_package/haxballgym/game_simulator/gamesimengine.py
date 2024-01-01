@@ -258,6 +258,8 @@ class GameSimEngine():
             for ball in self.balls:
                 if player.getDistanceTo(ball) <= player.radius + ball.radius + 4:
 
+                    if player.team == 0:
+                        self.was_ball_touched_red = True
                     if player.current_action.isKicking() and player.can_kick:
                         self.makeEntityHitBall(player, ball)
                         player.can_kick = False

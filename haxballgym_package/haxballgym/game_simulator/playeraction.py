@@ -55,8 +55,8 @@ class Action:
             action = (0, 0)
 
         if len(action) == 1:
-            self.dir_idx = action[0] >> 1
-            self.kicking = action[0] & 1
+            self.dir_idx = int(action[0] >> 1)
+            self.kicking = int(action[0] & 1)
         elif len(action) == 2:
             # Handle the case of (kicking_state, movement_direction)
             self.dir_idx = action[0]
