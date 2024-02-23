@@ -4,8 +4,12 @@ from haxball_baselines.agents.baseline_DQN_agent import DQNBaselineAgent
 from haxball_ai.model import ActorCriticAgent
 from haxball_ai.envs import get_2p_env
 
+
 # human agent with WASD key bindings
 human_agent = haxballgym.HumanAgent(team="red")
+
+# human agent with WASD key bindings
+human_agent_2 = haxballgym.HumanAgent(team="blue")
 
 # random motion agent
 red_random = haxballgym.RandomAgent(10)
@@ -26,7 +30,6 @@ ppo_agent = PPOBaselineAgent(
 haxballgym.play_visual_games_pennymatching(red_agents=[human_agent], blue_agents=[red_random], print_debug=True)
 
 
-
 # DQN-trained agent
 dqn_agent = DQNBaselineAgent(
     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/DQN_example4.zip',
@@ -34,8 +37,6 @@ dqn_agent = DQNBaselineAgent(
     haxballgym.SinglePlayerEnvironment(use_discrete_actionspace=True),
     team=0
 )
-
-
 
 # A3C agent
 A3C_agent_red = ActorCriticAgent(
@@ -53,9 +54,9 @@ A3C_agent_blue = ActorCriticAgent(
 
 """
 
+# haxballgym.play_visual_games_4team([human_agent], [red_random], [red_random], [red_random])
 
-haxballgym.play_visual_games_pennymatching([human_agent], [red_random])
+# haxballgym.play_visual_games_pennymatching([human_agent], [red_random])
 
 # play visual games
-# haxballgym.play_visual_games_2team([ppo_agent], [], print_debug=True)
-
+haxballgym.play_visual_games_2team([human_agent], [human_agent_2], print_debug=True)

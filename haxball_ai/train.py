@@ -4,6 +4,7 @@ import torch.optim as optim
 import time
 import os
 import numpy as np
+import sys
 
 from haxball_ai.envs import get_2p_env
 from haxball_ai.model import ActorCritic, ActorCriticAgent
@@ -136,7 +137,7 @@ def load_opponent():
     Chooses an old version of self and loads it in as the opponent
     """
 
-    old_models = os.listdir('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/')
+    old_models = os.listdir(sys.argv[1][14:] + '/saves/')
 
     if len(old_models) == 0:
         opponent = ActorCriticAgent(None, 15, get_2p_env(), team="blue")
@@ -155,7 +156,7 @@ def load_opponent():
     else:
         raise ValueError("invalid distribution")
 
-    opponent = ActorCriticAgent('/Users/stefanclarkework/Desktop/HaxballEnv/haxball_ai/saves/' + str(choice), 15, get_2p_env(),
+    opponent = ActorCriticAgent(sys.argv[1][14:] + '/saves/' + str(choice), 15, get_2p_env(),
                                 team="blue")
     return opponent
 

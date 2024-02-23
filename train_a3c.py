@@ -1,9 +1,12 @@
 from __future__ import print_function
 
 import os
+import sys
+import datetime
 
 import torch
 import torch.multiprocessing as mp
+import hydra
 
 from haxball_ai.optimizers import my_optim
 from haxball_ai.envs import get_2p_env
@@ -13,9 +16,12 @@ from haxball_ai.train import train
 from haxball_ai.settings import settings
 
 
-if __name__ == '__main__':
+@hydra.main(version_base=None, config_path='configs/run_cfgs/', config_name='train.yaml')
+def train_a3c(cfg):
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['CUDA_VISIBLE_DEVICES'] = ""
+
+    os.mkdir(sys.argv[1][14:] + '/saves')
 
     torch.manual_seed(settings.seed)
     env = get_2p_env()
@@ -46,3 +52,13 @@ if __name__ == '__main__':
 
     for p in processes:
         p.join()
+
+
+base = 'hydra.run.dir=outputs'
+
+if __name__ == "__main__":
+    sys.argv += ['']
+    sys.argv[1] = 'a3c'
+    sys.argv[1] = base + '/' + sys.argv[1] + f'/{datetime.date.today()}/{str(datetime.datetime.now())[:-10]}'
+    sys.argv = [sys.argv[0], sys.argv[1]]
+    train_a3c()
