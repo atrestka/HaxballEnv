@@ -25,3 +25,4 @@ model.save("haxball_baselines/models/PPO_example5")
 # test trained model
 print('final test result:')
 print(evaluate(model, 100))
+

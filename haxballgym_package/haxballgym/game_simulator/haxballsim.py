@@ -7,9 +7,9 @@ class HaxballGameSim(GameSimEngine):
     def __init__(self, balls, goals, walls, other_rectangles, players, printDebug=False, printDebugFreq=600,
                  print_score_update=False,
                  auto_score=False, rand_reset=True, max_steps=-1,
-                 auto_reset=True):
+                 auto_reset=True, seed=None):
 
-        GameSimEngine.__init__(self, players, balls, goals, walls, other_rectangles, auto_reset)
+        GameSimEngine.__init__(self, players, balls, goals, walls, other_rectangles, auto_reset, seed)
 
         # Sets extra information to do with. Probably a convention that I am
         self.rand_reset = rand_reset

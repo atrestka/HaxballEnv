@@ -8,9 +8,9 @@ from haxballgym.game_simulator.haxballsim import HaxballGameSim
 class TwoTeamHaxballGamesim(HaxballGameSim):
     def __init__(self, red_player_count, blue_player_count, ball_count, printDebug=False, printDebugFreq=600,
                  print_score_update=False, auto_score=False,
-                 rand_reset=True, max_steps=-1, auto_reset=True):
+                 rand_reset=True, max_steps=-1, auto_reset=True, seed = None):
 
-        update_config_from_yaml(config, 'haxballgym_package/haxballgym/haxball/haxball_config_2p.yaml')
+        update_config_from_yaml(config, '/Users/alextrestka/Alexander G Trestka Dropbox/Alex Trestka/Mac/Desktop/HaxballEnv/haxballgym_package/haxballgym/haxball/haxball_config_2p.yaml')
 
         self.reds = [Player(0, np.zeros(2)) for _ in range(red_player_count)]
         self.blues = [Player(1, np.zeros(2)) for _ in range(blue_player_count)]
@@ -28,7 +28,7 @@ class TwoTeamHaxballGamesim(HaxballGameSim):
         walls = []
 
         HaxballGameSim.__init__(self, balls, goals, walls, other_rectangles, players, printDebug, printDebugFreq,
-                                print_score_update, auto_score, rand_reset, max_steps, auto_reset=auto_reset)
+                                print_score_update, auto_score, rand_reset, max_steps, auto_reset=auto_reset, seed = seed)
 
 
 class FourTeamHaxballGameSim(HaxballGameSim):
@@ -37,7 +37,7 @@ class FourTeamHaxballGameSim(HaxballGameSim):
                  print_score_update=False, auto_score=False,
                  rand_reset=True, max_steps=-1, auto_reset=True):
         
-        update_config_from_yaml(config, 'haxballgym_package/haxballgym/haxball/haxball_config_4p.yaml')
+        update_config_from_yaml(config, '/Users/alextrestka/Alexander G Trestka Dropbox/Alex Trestka/Mac/Desktop/HaxballEnv/haxballgym_package/haxballgym/haxball/haxball_config_4p.yaml')
 
         self.reds = [Player(0, np.zeros(2)) for _ in range(red_player_count)]
         self.blues = [Player(1, np.zeros(2)) for _ in range(blue_player_count)]

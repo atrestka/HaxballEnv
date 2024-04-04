@@ -2,11 +2,11 @@ from haxballgym.environments.env import HaxballGymEnvironmentTemplate
 from haxballgym.haxball.haxball import TwoTeamHaxballGamesim
 from haxballgym.game_simulator import playeraction
 from haxballgym.config import config
-import gym
+import gymnasium as gym
 
 
 class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
-    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=False):
+    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=True, seed=None):
 
         config.TEAM_NUMBERS = [1]
 
@@ -17,10 +17,12 @@ class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
             auto_score=True,
             rand_reset=rand_reset,
             max_steps=max_steps * step_len,
-            auto_reset=False
+            auto_reset=False,
+            seed = seed
         )
 
         HaxballGymEnvironmentTemplate.__init__(self, gamesim, step_len, max_steps, norming)
+        self.seed(seed)
 
         self.use_discrete_actionspace = use_discrete_actionspace
         if use_discrete_actionspace:

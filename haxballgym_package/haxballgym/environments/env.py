@@ -1,22 +1,25 @@
+import gymnasium as gym
 from gym import Env
-import gym
 from haxballgym.game_displayer import basicdisplayer
 from haxballgym.config import config
-
+import gymnasium.utils.seeding as seeding
 import numpy as np
 
 
 class HaxballGymEnvironmentTemplate(Env):
     def __init__(self, game_sim, step_len=15, max_steps=400, norming=True):
+        self.np_random = None
         self.step_len = step_len
         self.max_steps = max_steps
         self.norming = norming
 
         self.game_sim = game_sim
-        if self.game_sim.rand_reset:
-            self.game_sim.resetMap()
-        else:
-            self.game_sim.resetMap("all default")
+
+        #commented out
+        # if self.game_sim.rand_reset:
+        #     self.game_sim.resetMap()
+        # else:
+        #     self.game_sim.resetMap("all default")
         self.steps_since_reset = 0
         self.display = None
         self.last_ballprox = self.game_sim.getBallProximityScore(0)
@@ -26,10 +29,17 @@ class HaxballGymEnvironmentTemplate(Env):
                                                       range(config.NUM_PLAYERS)])
         self.observation_space = get_observation_space()
 
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        #seed game sim if needed -- Not sure here
+        if hasattr(self.game_sim, 'seed'):
+            self.game_sim.seed(seed)
+        return [seed]
+    
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
         # That's desired so the state is in an easier to manipulate form.
-        return np.array(self.game_sim.log().posToNp(0, self.norming))
+        return np.array(self.game_sim.log().posToNp(0, self.norming), dtype=np.float32)
 
     def getActions(self, action_list):
         raise NotImplementedError
@@ -47,25 +57,39 @@ class HaxballGymEnvironmentTemplate(Env):
 
         self.game_sim.giveCommands(actions)
         ball_touched_red = False
+        
+        terminated = False
+        truncated = False
+        info = {}
 
         for i in range(self.step_len):
             game_ended = self.game_sim.step()
             goal = self.goalScored()
             ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
+            
             # If a goal is scored return instantly
             if goal != 0 or game_ended:
-                result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
-                return result
+                obs = self.getState()
+                reward = self.getStepReward(goal, ball_touched_red)
+                terminated = True
+                info = {}
+                return obs, reward, terminated, info
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
-            result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
+            obs = self.getState()
+            reward = self.getStepReward(goal, ball_touched_red)
+            done = True
         else:
-            result = [self.getState(), self.getStepReward(goal, ball_touched_red), False, {}]
+            obs = self.getState()
+            reward = self.getStepReward(goal, ball_touched_red)
+            done = False
 
+
+        info = {}
         self.last_ballprox = self.game_sim.getBallProximityScore(0)
 
-        return result
+        return obs, reward, done, info
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it
@@ -79,13 +103,15 @@ class HaxballGymEnvironmentTemplate(Env):
         if self.display.rip:
             self.display.shutdown()
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
+        self.seed(seed)
+
         self.steps_since_reset = 0
         if self.game_sim.rand_reset:
             self.game_sim.resetMap()
         else:
             self.game_sim.resetMap("all default")
-        return self.getState()
+        return self.getState(), {}
 
     def goalScored(self):
         # Checks goals. Returns 1 for red, 0 for none, -1 for blue.

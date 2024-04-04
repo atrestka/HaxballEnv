@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 from gym.spaces.box import Box
 import haxballgym

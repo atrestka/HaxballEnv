@@ -1,10 +1,10 @@
 from haxballgym.config import config
-
+import gymnasium.utils.seeding as seeding
 import numpy as np
 
 
 class GameSimEngine():
-    def __init__(self, players, balls, goals, walls, other_rectangles, auto_reset=True, seed=-1):
+    def __init__(self, players, balls, goals, walls, other_rectangles, auto_reset=True, seed=None):
         # Intialise the entities
         self.players = players
         self.balls = balls
@@ -29,19 +29,24 @@ class GameSimEngine():
         # Number of elapsed frames
         self.steps = 0
 
-        # Initialise the random seed iff seed != 1
-        if seed != -1:
-            np.random.seed(seed)
+        #Initialize RNG
+        self.np_random = None
+        self.seed(seed)
 
         # goalposts
         self.goalposts = sum([goal.goalposts for goal in self.goals], [])
 
+
+    def seed(self,seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
     def getRandomPositionInThePlayingField(self):
-        return np.array([np.random.random_sample() * 840, np.random.random_sample() * 400]).astype(float)
+        return np.array([self.np_random.uniform(low=0, high=840), self.np_random.uniform(low=0, high=400)]).astype(float)
 
     def getRandomPositionInThePitch(self):
-        return np.array([config.PITCH_CORNER_X + np.random.random_sample() * 580,
-                         config.PITCH_CORNER_Y + np.random.random_sample() * 200]).astype(float)
+        return np.array([config.PITCH_CORNER_X + self.np_random.uniform(low=0, high=580),
+                         config.PITCH_CORNER_Y + self.np_random.uniform(low=0, high=200)]).astype(float)
 
     def bounceInPitch(self, obj, movement_space_x, movement_space_y):
 
