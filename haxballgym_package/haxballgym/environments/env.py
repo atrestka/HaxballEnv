@@ -1,5 +1,5 @@
 import gymnasium as gym
-from gym import Env
+from gymnasium import Env #switch all instances of gym to gymnasium
 from haxballgym.game_displayer import basicdisplayer
 from haxballgym.config import config
 import gymnasium.utils.seeding as seeding
@@ -7,7 +7,7 @@ import numpy as np
 
 
 class HaxballGymEnvironmentTemplate(Env):
-    def __init__(self, game_sim, step_len=15, max_steps=400, norming=True):
+    def __init__(self, game_sim, step_len=15, max_steps=50, norming=True):
         self.np_random = None
         self.step_len = step_len
         self.max_steps = max_steps
@@ -73,7 +73,7 @@ class HaxballGymEnvironmentTemplate(Env):
                 reward = self.getStepReward(goal, ball_touched_red)
                 terminated = True
                 info = {}
-                return obs, reward, terminated, info
+                return obs, reward, terminated, truncated, info
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
@@ -89,7 +89,7 @@ class HaxballGymEnvironmentTemplate(Env):
         info = {}
         self.last_ballprox = self.game_sim.getBallProximityScore(0)
 
-        return obs, reward, done, info
+        return obs, reward, done,truncated, info
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it
