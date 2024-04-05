@@ -6,7 +6,7 @@ import gym
 
 
 class SinglePlayerEnvironment(HaxballGymEnvironmentTemplate):
-    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=False):
+    def __init__(self, step_len=15, max_steps=400, norming=True, rand_reset=True, use_discrete_actionspace=True):
 
         config.TEAM_NUMBERS = [1]
 
