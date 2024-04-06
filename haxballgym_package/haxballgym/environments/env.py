@@ -31,6 +31,9 @@ class HaxballGymEnvironmentTemplate(Env):
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
+        
+        if seed is not None: 
+            np.random.seed(seed)
         #seed game sim if needed -- Not sure here
         if hasattr(self.game_sim, 'seed'):
             self.game_sim.seed(seed)
