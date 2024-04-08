@@ -1,4 +1,4 @@
 pygame
 torch
-gym
-stable_baselines3
+gymnasium
+#stable_baselines3

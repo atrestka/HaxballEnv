@@ -2,7 +2,6 @@ from haxballgym.config import config
 from haxballgym.game_simulator import playeraction
 from haxballgym.game_log import log
 import copy
-
 import numpy as np
 
 
@@ -55,11 +54,23 @@ class Player(CircleEntity):
 
         self.vel *= config.PLAYER_DAMPING
         self.pos += self.vel
+    
+    #define method for obtaining global seed
+    def get_seed(self):
+        from haxballgym.environments.env import global_rng
+        return global_rng
+    
+    #define method for accessing global seed and creating a random uniform sample with PCG64 algorithm random number generator
+    def uniPCG64(self, low_bound, high_bound): 
+        uniGlobal = self.get_seed()
+        x = uniGlobal.uniform(low = float(low_bound), high = float(high_bound))
+        return x
 
     def reset(self, reset_type):
         if reset_type == "random":  # positional parameters
-            self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
-                                 config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
+            self.pos = np.array([config.PITCH_CORNER_X + self.uniPCG64(0,580),
+                                 config.PITCH_CORNER_Y + self.uniPCG64(0,200)]).astype(float)
+
         elif reset_type == "default":
             self.pos = copy.copy(self.default_position)
         else:
@@ -91,11 +102,23 @@ class Ball(CircleEntity):
         # whatever reason. God help us all
         self.vel *= config.BALL_DAMPING
         self.pos += self.vel
+        #define method for obtaining global seed
+    
+    def get_seed(self):
+        from haxballgym.environments.env import global_rng
+        return global_rng
+    
+    #define method for accessing global seed and creating a random uniform sample with PCG64 algorithm random number generator
+    def uniPCG64(self, low_bound, high_bound): 
+        uniGlobal = self.get_seed()
+        x = uniGlobal.uniform(low = float(low_bound), high = float(high_bound))
+        return x
 
     def reset(self, reset_type):
         if reset_type == "random":  # positional parameters
-            self.pos = np.array([config.PITCH_CORNER_X + (np.random.random_sample()) * 580,
-                                 config.PITCH_CORNER_Y + (np.random.random_sample()) * 200]).astype(float)
+            self.pos = np.array([config.PITCH_CORNER_X + self.uniPCG64(0,580),
+                                 config.PITCH_CORNER_Y + self.uniPCG64(0,200)]).astype(float)
+
         elif reset_type == "default":
             self.pos = np.array([config.PITCH_CORNER_X + config.PITCH_WIDTH / 2,
                                  config.PITCH_CORNER_Y + config.PITCH_HEIGHT / 2])

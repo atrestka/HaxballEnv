@@ -1,22 +1,31 @@
-from gym import Env
-import gym
+from typing import Any, Optional, Tuple
+import numpy as np
+import gymnasium as gym
+from gymnasium import Env
 from haxballgym.game_displayer import basicdisplayer
 from haxballgym.config import config
+from gymnasium import error
 
-import numpy as np
+#Globally initialize PCG64 random number generator
+global_rng = np.random.Generator(np.random.PCG64(np.random.SeedSequence(None)))
 
 
 class HaxballGymEnvironmentTemplate(Env):
-    def __init__(self, game_sim, step_len=15, max_steps=400, norming=True):
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    def __init__(self, game_sim, step_len=15, max_steps=400, norming=True, render_mode=None): 
         self.step_len = step_len
         self.max_steps = max_steps
         self.norming = norming
 
         self.game_sim = game_sim
+
+
+        # Reset method is always called before step, no need for this
         if self.game_sim.rand_reset:
             self.game_sim.resetMap()
         else:
             self.game_sim.resetMap("all default")
+
         self.steps_since_reset = 0
         self.display = None
         self.last_ballprox = self.game_sim.getBallProximityScore(0)
@@ -26,10 +35,20 @@ class HaxballGymEnvironmentTemplate(Env):
                                                       range(config.NUM_PLAYERS)])
         self.observation_space = get_observation_space()
 
+        # define render specifications
+
+        assert render_mode is None or render_mode in self.metadata["render_modes"]
+        self.render_mode = render_mode
+
+        
+        self.window_size = 512
+        self.window = None
+        self.clock = None
+
     def getState(self):
         # Returns the state of the game, posToNp flattens it to a np array.
         # That's desired so the state is in an easier to manipulate form.
-        return np.array(self.game_sim.log().posToNp(0, self.norming))
+        return np.array(self.game_sim.log().posToNp(0, self.norming), dtype=np.float32)
 
     def getActions(self, action_list):
         raise NotImplementedError
@@ -54,18 +73,21 @@ class HaxballGymEnvironmentTemplate(Env):
             ball_touched_red = ball_touched_red or self.game_sim.was_ball_touched_red
             # If a goal is scored return instantly
             if goal != 0 or game_ended:
-                result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
-                return result
+                return self.getState(), self.getStepReward(goal, ball_touched_red), True,False, {}
 
         # If no goal consider it a tie.
         if self.steps_since_reset >= self.max_steps:
-            result = [self.getState(), self.getStepReward(goal, ball_touched_red), True, {}]
+            obs = self.getState()
+            reward = self.getStepReward(goal, ball_touched_red)
+            done = True
         else:
-            result = [self.getState(), self.getStepReward(goal, ball_touched_red), False, {}]
+            obs = self.getState()
+            reward = self.getStepReward(goal, ball_touched_red)
+            done = False
 
         self.last_ballprox = self.game_sim.getBallProximityScore(0)
 
-        return result
+        return obs, reward, done, False, {}
 
     def render(self, mode='human'):
         # If the display hasn't been created, create it
@@ -79,13 +101,37 @@ class HaxballGymEnvironmentTemplate(Env):
         if self.display.rip:
             self.display.shutdown()
 
-    def reset(self):
+    #define additional method to initiate global random number generator with specific seed
+    def set_seed(self, seed):
+        global global_rng
+        seed_seq = np.random.SeedSequence(seed)
+        global_rng = np.random.Generator(np.random.PCG64(seed_seq))
+
+    def reset(self, seed=None, options=None):
+        
+        #Check to see that the Seed exists
+        if seed is not None and not (isinstance(seed,int)and 0 <= seed):
+            if isinstance(seed, int) is False:
+                raise error.Error(
+                    f"Seed must be a python integer, actual type: {type(seed)}"
+                )
+            else: 
+                raise error.Error(
+                    f"Seed must be greater or equal to zero, actual value: {seed}"
+            )
+
+        #instantiate global random number generator seed if not none
+        self.set_seed(seed)
+
+
+        #Reset Map
         self.steps_since_reset = 0
         if self.game_sim.rand_reset:
             self.game_sim.resetMap()
         else:
-            self.game_sim.resetMap("all default")
-        return self.getState()
+            self.game_sim.resetMap(reset_type = "all default")
+        return self.getState(), {}
+    
 
     def goalScored(self):
         # Checks goals. Returns 1 for red, 0 for none, -1 for blue.

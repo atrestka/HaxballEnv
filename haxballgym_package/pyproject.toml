@@ -1,7 +1,7 @@
 [project]
 name = "haxballgym"
 version = "0.1"
-dependencies = ["pygame", "torch", "gym"]
+dependencies = ["pygame", "torch", "gymnasium"]
 
 [tool.setuptools]
 packages = ["haxballgym"]

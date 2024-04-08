@@ -2,7 +2,7 @@ from haxballgym.environments.env import HaxballGymEnvironmentTemplate
 from haxballgym.game_simulator import playeraction
 from haxballgym.penny_matching.pennymatching import PennyMatchingGameSim
 from haxballgym.config import config
-import gym
+import gymnasium as gym
 import numpy as np
 from haxballgym.agents.randomagent import RandomAgent
 

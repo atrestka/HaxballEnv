@@ -24,6 +24,8 @@ class HaxballGameSim(GameSimEngine):
         self.walls = walls
         self.other_recrangles = other_rectangles
 
+
+        #Commented out -- No need for this
         if self.rand_reset:
             self.resetMap()
 

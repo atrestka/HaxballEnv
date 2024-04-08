@@ -18,12 +18,12 @@ red_random = haxballgym.RandomAgent(10)
 idle_agent = haxballgym.IdleAgent()
 
 
-# PPO-trained agent
-ppo_agent = PPOBaselineAgent(
-    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example_single_player.zip',
-    15,
-    haxballgym.SinglePlayerEnvironment()
-)
+# # PPO-trained agent
+# ppo_agent = PPOBaselineAgent(
+#     '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/PPO_example_single_player.zip',
+#     15,
+#     haxballgym.SinglePlayerEnvironment()
+# )
 
 """
 # play visual games

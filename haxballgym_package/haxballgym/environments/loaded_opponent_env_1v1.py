@@ -2,7 +2,7 @@ from haxballgym.environments.env import HaxballGymEnvironmentTemplate
 from haxballgym.game_simulator import playeraction
 from haxballgym.haxball.haxball import TwoTeamHaxballGamesim
 from haxballgym.config import config
-import gym
+import gymnasium as gym
 from haxballgym.agents.randomagent import RandomAgent
 
 

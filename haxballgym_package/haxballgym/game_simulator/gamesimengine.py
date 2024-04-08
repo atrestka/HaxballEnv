@@ -1,10 +1,13 @@
 from haxballgym.config import config
-
+#from haxballgym.environments.env import global_seed
 import numpy as np
+
+#import global seed variable from env.py
 
 
 class GameSimEngine():
-    def __init__(self, players, balls, goals, walls, other_rectangles, auto_reset=True, seed=-1):
+    #removed last argument, seed=-1, from initializer
+    def __init__(self, players, balls, goals, walls, other_rectangles, auto_reset=True):
         # Intialise the entities
         self.players = players
         self.balls = balls
@@ -29,19 +32,34 @@ class GameSimEngine():
         # Number of elapsed frames
         self.steps = 0
 
+
+        # Deprecated seed initialisation
         # Initialise the random seed iff seed != 1
-        if seed != -1:
-            np.random.seed(seed)
+        # if seed != -1:
+        #     np.random.seed(seed)
 
         # goalposts
         self.goalposts = sum([goal.goalposts for goal in self.goals], [])
-
+    
+    #define method for obtaining global random number generator
+    def get_seed(self):
+        from haxballgym.environments.env import global_rng
+        return global_rng
+    
+    #define method for accessing global seed and creating a random uniform sample with PCG64 algorithm random number generator
+    def uniPCG64(self, low_bound, high_bound): 
+        uniGlobal = self.get_seed()
+        x = uniGlobal.uniform(low = float(low_bound), high = float(high_bound))
+        return x
+        
     def getRandomPositionInThePlayingField(self):
-        return np.array([np.random.random_sample() * 840, np.random.random_sample() * 400]).astype(float)
+        return np.array([self.uniPCG64(0,840), self.uniPCG64(0,400)]).astype(float)
+    
 
     def getRandomPositionInThePitch(self):
-        return np.array([config.PITCH_CORNER_X + np.random.random_sample() * 580,
-                         config.PITCH_CORNER_Y + np.random.random_sample() * 200]).astype(float)
+        return np.array([config.PITCH_CORNER_X + self.uniPCG64(0,580),
+                         config.PITCH_CORNER_Y + self.uniPCG64(0,200)]).astype(float)
+
 
     def bounceInPitch(self, obj, movement_space_x, movement_space_y):
 
