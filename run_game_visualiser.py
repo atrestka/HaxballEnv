@@ -15,7 +15,7 @@ human_agent_2 = haxballgym.HumanAgent(team="blue")
 red_random = haxballgym.RandomAgent(10)
 
 # agent which does nothing
-idle_agent = haxballgym.IdleAgent()
+#idle_agent = haxballgym.IdleAgent()
 
 
 # # PPO-trained agent
@@ -30,13 +30,7 @@ idle_agent = haxballgym.IdleAgent()
 haxballgym.play_visual_games_pennymatching(red_agents=[human_agent], blue_agents=[red_random], print_debug=True)
 
 
-# DQN-trained agent
-dqn_agent = DQNBaselineAgent(
-    '/Users/stefanclarkework/Desktop/HaxballEnv/haxball_baselines/models/DQN_example4.zip',
-    15,
-    haxballgym.SinglePlayerEnvironment(use_discrete_actionspace=True),
-    team=0
-)
+
 
 # A3C agent
 A3C_agent_red = ActorCriticAgent(
@@ -54,9 +48,18 @@ A3C_agent_blue = ActorCriticAgent(
 
 """
 
+# DQN-trained agent
+# dqn_agent = DQNBaselineAgent(
+#     '/Users/alextrestka/Desktop/HaxballEnv/haxball_baselines/models/DQN_SinglePlayerHaxball-v0.zip',
+#     15,
+#     haxballgym.SinglePlayerEnvironment(use_discrete_actionspace=True),
+#     team=0
+# )
+
 # haxballgym.play_visual_games_4team([human_agent], [red_random], [red_random], [red_random])
 
 # haxballgym.play_visual_games_pennymatching([human_agent], [red_random])
 
+#remember to always change config
 # play visual games
-haxballgym.play_visual_games_2team([human_agent], [human_agent_2], print_debug=True)
+haxballgym.play_visual_games_2team([human_agent_2], [human_agent], print_debug=True)

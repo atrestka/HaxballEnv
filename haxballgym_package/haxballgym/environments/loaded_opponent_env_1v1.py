@@ -1,5 +1,5 @@
 from haxballgym.environments.env import HaxballGymEnvironmentTemplate
-from haxballgym.game_simulator import playeraction
+from haxballgym.game_simulator import playeraction #potential issue here
 from haxballgym.haxball.haxball import TwoTeamHaxballGamesim
 from haxballgym.config import config
 import gymnasium as gym
@@ -8,7 +8,7 @@ from haxballgym.agents.randomagent import RandomAgent
 
 class LoadedOpponentEnv1v1(HaxballGymEnvironmentTemplate):
     def __init__(self, opponent=None, step_len=15, max_steps=400, norming=True, rand_reset=True,
-                 use_discrete_actionspace=False):
+                 use_discrete_actionspace=True):
 
         self.opponent = opponent
 

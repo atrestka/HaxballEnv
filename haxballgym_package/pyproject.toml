@@ -4,4 +4,4 @@ version = "0.1"
 dependencies = ["pygame", "torch", "gymnasium"]
 
 [tool.setuptools]
-packages = ["haxballgym"]
+packages = ["haxballgym", "haxballgym.agents", "haxballgym.environments", "haxballgym.game_displayer", "haxballgym.game_log", "haxballgym.game_simulator", "haxballgym.game_simulator.entities", "haxballgym.haxball", "haxballgym.penny_matching", "haxballgym.test"]
